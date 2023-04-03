@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.ddit.mapper.DPMapper">
+
+	<!-- (관리자) 학과 전체조회 -->
+	<select id="deptList" resultType="departmentVO">
+            SELECT D.DEPT_NUM, D.COLL_NUM, D.DEPT_NM, D.DEPT_NUMBER, C.COLL_NM, D.DEPT_FEES ,
+		      (SELECT COUNT(*) FROM TEACHER WHERE DEPT_NUM = D.DEPT_NUM) TEA_NUM, 
+		      (SELECT COUNT(*) FROM SUBJECT WHERE DEPT_NUM = D.DEPT_NUM) COUNT_SUBJECT  
+			  FROM DEPARTMENT D, COLLEAGE C
+		     WHERE D.COLL_NUM = C.COLL_NUM
+		       AND D.DEPT_NUM != 0
+			 ORDER BY DEPT_NUM ASC
+	</select>
+	
+	<!-- (관리자) 단과대학 가져오기 -->
+	<select id="getCollNm" resultType="departmentVO">
+		SELECT COLL_NM, COLL_NUM
+		  FROM COLLEAGE
+		 WHERE COLL_NUM !=0
+		 ORDER BY COLL_NUM ASC
+	</select>
+ 	
+ 	
+ 	<!-- (관리자) 학과 삭제 -->
+ 	<delete id="deleteNum" parameterType="HashMap">
+ 		DELETE DEPARTMENT WHERE DEPT_NUM = #{deptNum}
+ 	</delete>
+ 	
+ 	<!-- (관리자) 교수 상세조회 -->
+ 	<select id="getProNum" parameterType="hashMap" resultType="teacherVO">
+ 	SELECT A.TEA_NM_KOR , B.COLL_NUM
+	      FROM TEACHER A , DEPARTMENT B 
+	      WHERE A.DEPT_NUM= B.DEPT_NUM
+	      AND B.COLL_NUM = (SELECT COLL_NUM 
+                              FROM COLLEAGE 
+                              WHERE COLL_NM = #{university})
+ 	</select>
+ 	
+	<insert id="createCollNm" parameterType="hashMap">
+		INSERT INTO DEPARTMENT
+		(DEPT_NUM, COLL_NUM, DEPT_NM, DEPT_NUMBER, DEPT_FEES)
+		VALUES
+		(SEQ_DEPARTMENT.NEXTVAL,(SELECT COLL_NUM
+		                           FROM COLLEAGE
+		                          WHERE COLL_NM = #{university}) ,#{deptNm},#{deptNumber},#{dpefFees})
+	</insert> 	
+	
+	
+</mapper>
+

@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+  <mapper namespace="kr.or.ddit.mapper.DPNoticeBoardMapper">
+  
+  	<select id="getDnNum" resultType="int">
+  		SELECT NVL(MAX(DN_NUM),0) + 1 FROM DEPARTMENT_NOTE
+  	</select>
+  	
+  	<insert id="createPost" parameterType="dnVO">
+  		INSERT INTO DEPARTMENT_NOTE(DN_NUM, TEA_NUM, DN_TITLE, DN_CONTENT, DN_DT, DN_READ, DEPT_NUM)
+  		VALUES (#{dnNum}, #{teaNum}, #{dnTitle}, #{dnContent}, SYSDATE, #{dnRead}, #{deptNum})
+  	</insert>
+ 	 
+ 	 <update id="createPostFiles" parameterType="java.util.List">
+ 	 	<selectKey resultType="int" order="BEFORE" keyProperty="dfNum">
+ 	 		SELECT NVL(MAX(DF_NUM),0) + 1 FROM DEPARTMENT_FILE
+ 	 	</selectKey>
+ 	 	<foreach collection="list" item="dfVO"
+ 	 			 open="insert all" close="select * from dual" separator=" " index="idx">
+ 	 		INTO DEPARTMENT_FILE(DF_NUM, DE_NUM, DF_NM)		 
+ 	 		VALUES(#{idx}+#{dfNum}, #{dfVO.deNum}, #{dfVO.dfNm})
+	 	</foreach>
+ 	 </update>
+
+ 	 
+  	<sql id="boardSearch">
+		<if test="category==null and category=='' and keyword!=null and keyword!=''">
+			and(
+				   DN_TITLE LIKE '%' || #{keyword} || '%'
+				OR DN_CONTENT LIKE '%' || #{keyword} || '%'
+			)
+		</if>
+		<if test="category=='title' and keyword!=null and keyword!=''">
+			and(
+				   DN_TITLE LIKE '%' || #{keyword} || '%'
+			)
+		</if>
+		<if test="category=='content' and keyword!=null and keyword!=''">
+			and(
+				   DN_CONTENT LIKE '%' || #{keyword} || '%'
+			)
+		</if>
+ 	</sql> 	
+ 	
+ 	 
+ 	 
+ 	 <select id="getTotal" parameterType="hashMap" resultType="int">
+ 	 	SELECT COUNT(*) FROM DEPARTMENT_NOTE
+ 	 	WHERE DEPT_NUM = #{deptNum}
+ 	 	<include refid="boardSearch" />
+ 	 </select>
+ 	 
+	<select id="getDPNoticeList" parameterType="hashMap" resultType="dnVO">
+		WITH U AS(
+		    SELECT ROW_NUMBER() OVER (ORDER BY  C.DN_NUM DESC) RNUM, C.*
+		    FROM(
+		            SELECT B.TEA_NM_KOR AS name, 
+		                   A.DN_NUM DN_NUM, A.DN_TITLE, A.DN_DT, A.DN_HIT, A.DN_READ
+		            FROM TEACHER B LEFT OUTER JOIN (       
+		                                            SELECT DN_NUM, TEA_NUM, DN_TITLE, DN_DT, DN_HIT, DN_READ
+		                                            FROM DEPARTMENT_NOTE
+		                                            WHERE DEPT_NUM = #{deptNum}
+		                                            <include refid="boardSearch"  />) A
+		            ON(B.TEA_NUM = A.TEA_NUM)
+		            WHERE B.TEA_NUM = A.TEA_NUM) C
+		)
+		SELECT U.*
+		FROM U
+		where u.rnum between (#{currentPage} * #{size}) - (#{size} - 1) and #{currentPage} * #{size}
+	</select>	
+  	
+  	 
+  </mapper>

@@ -1,0 +1,15 @@
+package kr.or.ddit.vo;
+
+import java.util.Date;
+
+import lombok.Data;
+
+@Data
+public class StudyVO {
+	private int sNum;
+	private int stuNum;
+	private String sNm;
+	private Date sDt;
+	private int sGrade;
+	private int sCount;
+}

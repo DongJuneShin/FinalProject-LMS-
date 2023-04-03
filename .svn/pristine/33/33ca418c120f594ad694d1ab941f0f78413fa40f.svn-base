@@ -1,0 +1,17 @@
+package kr.or.ddit.vo;
+
+import java.util.Date;
+
+import org.apache.ibatis.type.Alias;
+
+import lombok.Data;
+
+@Data
+@Alias("chatVO")
+public class ChatVO {
+	private int chatNum;
+	private String stuNum;
+	private String chatCont;
+	private Date chatDate;
+	private int readCount;
+}

@@ -1,0 +1,29 @@
+package kr.or.ddit.study.timetable.service.impl;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import kr.or.ddit.mapper.StudyTimetableMapper;
+import kr.or.ddit.study.timetable.service.IStudyTimetableService;
+import kr.or.ddit.vo.StudentVO;
+import kr.or.ddit.vo.TimeVO;
+
+@Service
+public class StudyTimetableServiceImpl implements IStudyTimetableService{
+	
+	@Autowired
+	StudyTimetableMapper mapper;
+	
+	@Override
+	public List<StudentVO> getStuList(int roomNumber) {
+		return mapper.getStuList(roomNumber);
+	}
+
+	@Override
+	public List<TimeVO> getTimeTableData(int stuNum) {
+		return mapper.getTimeTableData(stuNum);
+	}
+
+}

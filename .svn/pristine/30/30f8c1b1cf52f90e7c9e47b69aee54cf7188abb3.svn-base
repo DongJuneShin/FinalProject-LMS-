@@ -1,0 +1,221 @@
+<%@ page language="java" contentType="text/html;charset=UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<style type="text/css">
+.card{
+	min-height: 100%;
+}
+.categoryBar{
+	color: gray;
+}
+.si_target{
+	width: 60%;
+	text-align: center;
+}
+thead{
+	text-align: center;
+}
+.table > thead {
+	vertical-align: middle;
+}
+th{
+ 	white-space: pre-line;
+ 	text-align: center;
+ }
+tr td {
+  text-align: center;
+}
+.div-header{
+	text-align: right;
+	padding-right: 1.625rem;
+}
+.innerCard{
+	border: 1px solid lightgray;
+	border-radius: 5px;
+	margin: 5px;
+	padding: 10px;
+}
+.search-sel{
+	width: 15%;
+}
+textarea{
+	resize: none;
+	width: 100%;
+	maxlength: 300;
+}
+.infoDiv{
+	margin: 10px;
+}
+</style>
+
+<h5 class="title categoryBar">교직원 조회</h5>
+
+<div class="card">
+
+	<div class="container">
+		<div class="card innerCard">
+			<div class="row g-3">
+				<div class="col-md-8">
+					<div class="row infoDiv">
+						<div class="col-sm-1"></div>
+						<select id="search" class="col-sm-1 form-select search-sel" aria-label="Default select example">
+							<option value="empNmKor" selected>이름</option>
+							<option value="empNum">교번</option>
+							<option value="empGroup">소속</option>
+							<option value="empTitle">직함</option>
+						</select>
+						
+						<div class="col-sm-5">
+							<input type="text" class="form-control" />
+						</div>
+						
+						<div class="col-sm-3">
+							<button type="button" class="btn btn-label-secondary">검색</button>
+						</div>
+					</div>
+				</div>
+				
+				<div class="col-md-4">
+					<div class="row infoDiv">
+						<div class="div-header">
+							<button type="button" class="btn btn-label-info" 
+								data-bs-toggle="modal" data-bs-target="#empInfo">추가</button>
+							<button type="button" class="btn btn-label-info">삭제</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<div class="container">
+		<table class="table table-bordered">
+			<thead class="table-active">
+				<tr class="text-nowrap">
+					<th></th>
+					<th>사번</th>
+					<th>이름</th>
+					<th>소속</th>
+					<th>부서</th>
+					<th>직책</th>
+				</tr>
+			</thead>
+			<tbody>
+				<c:forEach var="admVO" items="${data}" varStatus="stat">
+				<tr id="empNum${admVO.empNum}">
+					<td><input class="form-check-input" type="checkbox" id="sel" name="sel"></td>
+					<td class="showEmpNum" data-bs-toggle="modal" data-showEmpNum="${admVO.empNum}" data-bs-target="#empInfo">${admVO.empNum}</td>
+					<td>${admVO.empNmKor}</td>
+					<td>${admVO.empGroup}</td>
+					<td>${admVO.empDp}</td>
+					<td>${admVO.empTitle}</td>
+				</tr>
+				</c:forEach>
+			</tbody>
+		</table>
+	</div>
+	
+</div>
+
+<div class="modal fade" id="empInfo" tabindex="-1" style="display: none;" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered1 modal-simple modal-add-new-cc">
+		<div class="modal-content p-3 p-md-5">
+			<div class="modal-body">
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				<form id="gradeForm">
+					<div class="row g-3">
+						<div class="col-md-5">
+							<div class="row">
+							<img alt="login.jpg" src="/resources/images/login.jpg" style="width: 100%; height: auto;" />
+							</div>
+							<div class="row">
+								<div class="input-group">
+						          <input type="file" class="form-control" id="empPhoto">
+						          <label class="input-group-text" for="empPhoto">사진</label>
+						        </div>
+							</div>
+						</div>
+						<div class="col-md-7">
+							<div class="row infoDiv">
+								<label class="col-sm-3 col-form-label text-sm-end" for="empNmKor">이름</label>
+								<div class="col-sm-9">
+									<input type="text" id="empNmKor" class="form-control" value="" readonly>
+								</div>
+							</div>
+							<div class="row infoDiv">
+								<label class="col-sm-3 col-form-label text-sm-end" for="empGroup">소속</label>
+								<div class="col-sm-9">
+									<input type="text" id="empGroup" class="form-control" value="" readonly>
+								</div>
+							</div>
+							<div class="row infoDiv">
+								<label class="col-sm-3 col-form-label text-sm-end" for="empTitle">직책</label>
+								<div class="col-sm-9">
+									<input type="text" id="empTitle" class="form-control" value="" readonly>
+								</div>
+							</div>
+						</div>
+						<div class="col-md-12">
+							<div class="row">
+								<label class="col-sm-3 col-form-label text-sm-end" for="empAccount">계좌번호</label>
+								<div class="col-sm-3">
+									<select id="empBank" class="form-select" aria-label="Default select example">
+										<option value="국민">국민</option>
+										<option value="농협">농협</option>
+										<option value="신한">신한</option>
+									</select>
+								</div>
+								<div class="col-sm-6">
+									<input type="text" id="empAccount" class="form-control" value="" readonly />
+								</div>
+							</div>
+						</div>
+						<div class="col-md-12">
+							<div class="row">
+								<label class="col-sm-3 col-form-label text-sm-end" for="empAddr1">주소</label>
+								<div class="col-sm-9">
+									<input type="text" id="empAddr1" class="form-control" value="" readonly />
+								</div>
+							</div>
+						</div>
+						<div class="col-md-12">
+							<div class="row">
+								<label class="col-sm-3 col-form-label text-sm-end" for="empAddr2">상세주소</label>
+								<div class="col-sm-9">
+									<input type="text" id="empAddr2" class="form-control" value="" readonly />
+								</div>
+							</div>
+						</div>
+						<div class="col-md-12">
+							<div class="row">
+								<label class="col-sm-3 col-form-label text-sm-end" for="empEmail">이메일</label>
+								<div class="col-sm-9">
+									<input type="text" id="empEmail" class="form-control" value="" readonly />
+								</div>
+							</div>
+						</div>
+						
+						<div class="col-md-12 text-center">
+							<button type="button" class="btn btn-primary me-sm-3 me-1">수정</button>
+							<button type="reset" class="btn btn-label-secondary" data-bs-dismiss="modal" aria-label="Close">닫기</button>
+						</div>
+						
+						<div class="col-md-12 text-center">
+							<button type="submit" class="btn btn-primary me-sm-3 me-1">저장</button>
+							<button type="reset" class="btn btn-label-secondary" data-bs-dismiss="modal" aria-label="Close">취소</button>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+<script>
+$(function(){
+	$(".showEmpNum").on("click",function(){
+		let showEmpNum = $(this).data("showEmpNum");
+		console.log("showEmpNum",showEmpNum);
+	});
+});
+
+
+</script>

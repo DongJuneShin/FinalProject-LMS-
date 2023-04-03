@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.or.ddit.mapper.MessageMapper">
+
+	<select id="getNoteList" parameterType="uservo" resultType="notevo">
+		SELECT NOTE_NUM, NOTE_SEND, SEND_NM, NOTE_REV, REV_NM, NOTE_TITLE, NOTE_CONTENT, NOTE_DT, NOTE_STATUS  
+		FROM NOTE
+		WHERE NOTE_REV = #{username} OR NOTE_SEND = #{username}
+		ORDER BY 8
+	</select>
+
+
+
+</mapper>

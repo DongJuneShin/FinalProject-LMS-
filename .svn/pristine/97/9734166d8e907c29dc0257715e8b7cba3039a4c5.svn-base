@@ -1,0 +1,84 @@
+package kr.or.ddit.academic.service;
+
+import java.util.List;
+import java.util.Map;
+
+import kr.or.ddit.vo.AcaDeptVO;
+import kr.or.ddit.vo.AcademicVO;
+
+public interface AcademicService {
+
+	//(학생)학적정보 출력
+	public Map<String, Object> getStuInfo(int stuNum);
+
+	//휴학/복학
+	//(학생)휴학 신청
+	public int appLeave(AcademicVO academicVO);
+
+	//(학생)각 학적변동 신청 건수 조회(처리상태:대기)
+	public int getAcCnt(Map<String, Object> cntMap);
+
+	//(학생)학적상태 조회
+	public int getStuStatus(int stuNum);
+
+	//(학생)휴학생 휴학 신청내역 조회
+	public List<AcademicVO> getLeaveHistory(int stuNum);
+
+	//(학생)복학 신청
+	public int appReturn(Map<String, Object> reMap);
+
+	//자퇴
+	//(학생)자퇴 신청
+	public int appDropout(Map<String, Object> dropMap);
+
+	//복수전공/부전공
+	//(학생)복수전공/부전공 신청 - 단과대학 명 & 단과대학별 소속학과 출력
+	public List<AcaDeptVO> getCollNDeptList();
+
+	//(학생)복수전공/부전공 신청 - 단과대 내 학과 목록 출력
+	public List<AcaDeptVO> getDeptList(String collNm);
+
+	//(학생)단과대학&학과명 동시 출력
+	public List<Map<String, Object>> getCnDList(String collNum);
+
+	//(학생)복수전공/부전공 신청
+	public int appDM(Map<String, Object> dmMap);
+
+	//(학생)복수전공/부전공 신청 내역 조회
+	public int getDMHistory(Map<String, Object> checkMap);
+
+	//(학생)복수전공/부전공 신청 요건 조회(이수학기, 평균평점, 전공과목 이수학점
+	public Map<String, Object> getStuQual(int stuNum);
+
+	//전과
+	//(전과 신청 조건)학과번호, 재학/휴학 인원 조회
+	public Map<String, Object> getTRCon(int tranDeptNum);
+
+	//추가 등록금 조회(기존학과 등록금 - 전과학과 등록금)
+	public Map<String, Object> getAddFee(Map<String, Object> feeMap);
+
+	//(학생)전과신청 내역 조회
+	public int getTRHistory(Map<String, Object> rqhMap);
+
+	//전과 신청
+	public int appTR(Map<String, Object> trMap);
+
+	//(학생)학적변동 신청 목록 조회
+	public List<Map<String, Object>> getAcChgList(int stuNum);
+
+	//(학생)복수전공/부전공 신청 목록 조회
+	public List<Map<String, Object>> getDMList(int stuNum);
+
+	//(학생)전과 신청 목록 조회
+	public List<Map<String, Object>> getTranList(int stuNum);
+
+	//(학생)학적변동 반려사유 조회
+	public Map<String, Object> getChgRejectReason(int acNum);
+
+	//복수전공/부전공 반려사유 조회
+	public Map<String, Object> getDMRejectReason(int dmNum);
+
+
+
+
+}

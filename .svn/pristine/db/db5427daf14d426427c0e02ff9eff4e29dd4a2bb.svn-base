@@ -1,0 +1,16 @@
+package kr.or.ddit.vo;
+
+import lombok.Data;
+
+@Data
+public class CourseAttendanceVO { 
+	private int stuNum;
+	private String stuNmKor;
+	private String deptNm;
+	private String timeTcode;
+	private int atWeek;
+	private int atCheck;
+	private int attend;
+	private int late;
+	private int absent;
+}

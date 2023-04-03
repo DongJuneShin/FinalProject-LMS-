@@ -1,0 +1,21 @@
+package kr.or.ddit.graduation;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+import kr.or.ddit.academic.academicController;
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
+@Controller
+@RequestMapping("/grad")
+public class GraduationController {
+	
+	//요청URI : /grad/selfTest
+	@GetMapping("/selfTest")
+	public String selfTest(Model model) {
+		return "graduation/selfTest";
+	}
+}

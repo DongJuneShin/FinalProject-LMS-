@@ -1,0 +1,22 @@
+package kr.or.ddit.common.controller;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+import kr.or.ddit.academic.academicController;
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
+@Controller
+@RequestMapping("/msg")
+public class MessageController {
+	
+	//요청URI : /msg/messageList
+	@GetMapping("/messageList")
+	public String messageList(Model model) {
+		return "common/messageList";
+	}
+
+}

@@ -1,0 +1,67 @@
+package kr.or.ddit.controller;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+@RequestMapping("/course")
+@Controller
+public class Sy_courseController {
+	
+	/**
+	 * 강의 목록
+	 * 학생 / 교수 공통
+	 */
+	@GetMapping("/list")
+	public void courseList() {}
+	
+	/**
+	 * 주차
+	 * 학생
+	 */
+	@GetMapping("/week")
+	public void courseWeek() {}
+	
+	/**
+	 * 공지
+	 * 학생 / 교수 공통
+	 */
+	@GetMapping("/notice")
+	public void courseNotice() {}
+	
+	/**
+	 * 공지 detail
+	 * 학생
+	 */
+	@GetMapping("/noticeDetail")
+	public void courseNoticeDetail() {}
+	
+	/**
+	 * 공지 insert / update 페이지
+	 * 교수
+	 */
+	@GetMapping("/noticeForm")
+	public void courseNoticeForm() {}
+	
+	/**
+	 * 학생 목록
+	 * 교수
+	 */
+	@GetMapping("/studentList")
+	public void courseStudentList() {}
+	
+	/**
+	 * 과제
+	 * 학생 / 교수 공통
+	 */
+	@GetMapping("/assignment")
+	public void courseAssignment() {}
+	
+	/**
+	 * 자료실
+	 * 학생 / 교수 공통
+	 */
+	@GetMapping("/reference")
+	public void courseReference() {}
+	
+}

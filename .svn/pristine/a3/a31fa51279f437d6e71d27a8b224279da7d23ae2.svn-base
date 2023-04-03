@@ -1,0 +1,78 @@
+package kr.or.ddit.mapper;
+
+import java.util.List;
+import java.util.Map;
+
+import kr.or.ddit.vo.AdminVO;
+import kr.or.ddit.vo.NoteVO;
+import kr.or.ddit.vo.StudentVO;
+import kr.or.ddit.vo.TeacherVO;
+import kr.or.ddit.vo.UserVO;
+
+public interface MessageMapper {
+
+	/**
+	 * 사용자가 받은 쪽지 목록 전체 불러오기
+	 * @param userVO
+	 * @return List<NoteVO>
+	 */
+	public List<NoteVO> getNoteList(UserVO userVO);
+
+	/**
+	 * 학생 목록 가져오기
+	 * @return List StudentVO
+	 */
+	public List<StudentVO> stuList();
+
+	/**
+	 * 교수 목록 가져오기
+	 * @return List TeacherVO
+	 */
+	public List<TeacherVO> teaList();
+
+	/**
+	 * 직원 목록 가져오기
+	 * @return List AdminVO
+	 */
+	public List<AdminVO> empList();
+	
+	/**
+	 * 안 읽은 메시지 수 불러오기
+	 * @param userVO
+	 * @return Integer
+	 */
+	public int unReadMsgCount(UserVO userVO);
+	/**
+	 * 보낸 메시지 수 불러오기
+	 * @param userVO
+	 * @return Integer
+	 */
+	public int sendMsgCount(UserVO userVO);
+	/**
+	 * 받은 메시지 수 불러오기
+	 * @param userVO
+	 * @return Integer
+	 */
+	public int revMsgCount(UserVO userVO);
+	/**
+	 * 총 메시지 수 불러오기
+	 * @param userVO
+	 * @return int
+	 */
+	public int totalCount(UserVO userVO);
+
+	/**
+	 * 쪽지 보내기
+	 * @param noteVO
+	 * @return 성공 : 1, 실패 : 0
+	 */
+	public Object insertMsg(NoteVO noteVO);
+	
+	/**
+	 * 편지 하나의 값 가져오기
+	 * @param noteVO
+	 * @return NoteVO
+	 */
+	public NoteVO getNote(NoteVO noteVO);
+
+}

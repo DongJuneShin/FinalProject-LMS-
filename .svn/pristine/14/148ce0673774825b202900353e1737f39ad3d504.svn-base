@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.or.ddit.mapper.StudyTimetableMapper">
+
+	<select id="getStuList" parameterType="int" resultType="stuVO">
+		SELECT A.STU_NUM, A.STU_PHOTO, A.STU_NM_KOR
+		FROM STUDENT A, STUDY B
+		WHERE B.S_NUM = #{data} AND A.STU_NUM = B.STU_NUM
+	</select>
+	
+	<select id="getTimeTableData" parameterType="int" resultType="timeVO">
+		SELECT A.TIME_TCODE
+		FROM LECTURE_TM A, (
+		                    SELECT SBJ_NUM AS SBJ_NUM
+		                    FROM COURSE_LIST
+		                    WHERE STU_NUM = #{data} AND CL_SEMESTER = '2019-01') B
+		WHERE A.SBJ_NUM = B.SBJ_NUM
+	</select>
+	
+
+
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

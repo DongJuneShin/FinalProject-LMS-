@@ -1,0 +1,78 @@
+package kr.or.ddit.acad;
+
+import org.json.simple.JSONArray;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import kr.or.ddit.acad.service.IACADCalendarService;
+import kr.or.ddit.vo.ACADCalendarVO;
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
+@RequestMapping("/acadCal")
+@Controller
+public class ACADCalendarController {
+	
+	@Autowired
+	IACADCalendarService service;
+	
+	@GetMapping("/acadCal")
+	public String acadCalendar() {
+		return "acad/acadCalendar";
+	}
+	
+	@ResponseBody
+	@GetMapping("/acadDataList")
+	public JSONArray calDataList() {
+		log.info("acadDataList에 왔다.");
+		
+		log.info("acadDataList :" + service.acadDataList());
+		
+		return service.acadDataList();
+	}
+	
+	@ResponseBody
+	@PostMapping("/addEvent")
+	public int AddEvent(@RequestBody ACADCalendarVO acVO) {
+		
+		log.info("AddEvent에 왔다");
+		log.info("acVO : " + acVO);
+		
+		int result = service.addEvent(acVO);
+		log.info("result : " + result);
+		
+		return result;
+	}
+
+	@ResponseBody
+	@PostMapping("/updateEvent")
+	public int updateEvent(@RequestBody ACADCalendarVO acVO) {
+		
+		log.info("updateEvent에 왔다");
+		log.info("acVO : " + acVO);
+		
+		int result = service.updateEvent(acVO);
+		log.info("result : " + result);
+		
+		return result;
+	}
+
+	@ResponseBody
+	@PostMapping("/removeEvent")
+	public int removeEvent(@RequestBody ACADCalendarVO acVO) {
+		
+		log.info("removeEvent에 왔다");
+		log.info("acVO : " + acVO);
+		
+		int result = service.removeEvent(acVO);
+		log.info("result : " + result);
+		
+		return result;
+	}
+
+}

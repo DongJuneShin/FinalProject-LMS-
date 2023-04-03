@@ -1,0 +1,30 @@
+package kr.or.ddit.lecture.impl;
+
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import kr.or.ddit.lecture.service.LectureService;
+import kr.or.ddit.mapper.LectureMapper;
+import kr.or.ddit.vo.LectureEvaVO;
+
+@Service
+public class LectureServiceImpl implements LectureService {
+	
+	@Autowired
+	LectureMapper lectureMapper;
+	
+	// (학생) 강의평가 조회
+	@Override
+	public List<LectureEvaVO> stuLectureList(Map<String, Object> map) {
+		return lectureMapper.stuLectureList(map);
+	}
+
+	// (관리자) 강의평가 조회
+	@Override
+	public List<LectureEvaVO> lectureList() {
+		return lectureMapper.lectureList();
+	}
+}

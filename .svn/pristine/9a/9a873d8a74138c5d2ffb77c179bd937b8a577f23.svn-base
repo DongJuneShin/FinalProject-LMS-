@@ -1,0 +1,16 @@
+package kr.or.ddit.acad;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+@RequestMapping("/acadCal")
+@Controller
+public class ACADCalendarController {
+	
+	@GetMapping("/acadCal")
+	public String acadCalendar() {
+		return "acad/acadCalendar";
+	}
+
+}

@@ -1,0 +1,65 @@
+package kr.or.ddit.login;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+
+import kr.or.ddit.login.service.fLoginService;
+import kr.or.ddit.vo.UserVO;
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
+@Controller
+public class fLoginContoller {
+	
+	@Autowired
+	fLoginService loginService;
+	
+	@GetMapping("/start")
+	public String login() {
+		return "login/login";
+	}
+	
+	@PostMapping("/loginCheck")
+	public String loginCheck(HttpServletRequest request, @ModelAttribute UserVO userVO) {
+		
+		String goPage = "";
+		
+		HttpSession session = request.getSession();
+		
+		String auth = loginService.getAuth(userVO);
+		
+		if(auth.length() == 0 || auth.equals("")) {
+			return "login/login";
+		}else {
+			userVO.setAuth(auth);
+			goPage = "redirect:/home";
+		}
+		
+		if(auth.equals("ROLE_STU")) {
+			userVO = loginService.getStudent(userVO);
+			session.setAttribute("userVO", userVO);
+		}else if(auth.equals("ROLE_TEA")) {
+			userVO = loginService.getTeacher(userVO);
+			session.setAttribute("userVO", userVO);
+		}else {
+			userVO = loginService.getAdmin(userVO);
+			session.setAttribute("userVO", userVO);
+		}
+		return goPage;
+	}
+	
+	@GetMapping("/logoutt")
+	public String logout(HttpSession session) {
+		
+		session.invalidate();
+		
+		return "redirect:/start";
+	}
+
+}

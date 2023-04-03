@@ -1,0 +1,177 @@
+package kr.or.ddit.graduation;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.servlet.http.HttpSession;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import kr.or.ddit.academic.academicController;
+import kr.or.ddit.graduation.service.GraduationService;
+import kr.or.ddit.vo.UserVO;
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
+@Controller
+@RequestMapping("/grad")
+@PreAuthorize("isAuthenticated()")
+public class GraduationController {
+
+	@Autowired
+	GraduationService graduationService;
+
+	//요청URI : /grad/selfTest
+	@GetMapping("/selfTest")
+	public String selfTest(HttpSession session, Model model) {
+		UserVO userVO = (UserVO) session.getAttribute("userVO");
+		log.info("selfTest의 userVO : " + userVO);
+		int stuNum = userVO.getUsername();
+		log.info("selfTest의  stuNum : " + stuNum);
+
+		//전공필수, 교양필수 이수학점 조회
+		int sbjRs = 1;
+
+		Map<String, Object> infoMap = new HashMap<String, Object>();
+		infoMap.put("stuNum", stuNum);
+		infoMap.put("sbjRs", sbjRs);
+		log.info("selfTest의 infoMap(put 이후) : " + infoMap);
+
+		int sumMrRecode = this.graduationService.getSumMRecode(infoMap);
+		log.info("sumMrRecode(전필 합계) : " + sumMrRecode);
+
+		int sumThisMrRecode = this.graduationService.getThisSumMRecode(infoMap);
+		log.info("sumThisMrRecode(금학기 전필 합계) : " + sumThisMrRecode);
+
+		int sumErRecode = this.graduationService.getSumERecode(infoMap);
+		log.info("sumErRecode(교필 합계) : " + sumErRecode);
+
+		int sumThisErRecode = this.graduationService.getThisSumERecode(infoMap);
+		log.info("sumThisErRecode(금학기 교필 합계) : " + sumThisErRecode);
+
+		//전공선택, 교양선택 이수학점 조회
+		sbjRs = 2;
+		infoMap.put("sbjRs", sbjRs);
+		log.info("infoMap(전공선택) : " + infoMap);
+
+		int sumMsRecode = this.graduationService.getThisSumMRecode(infoMap);
+		log.info("sumMsRecode(전선 합계) : " + sumMsRecode);
+
+		int sumThisMsRecode = this.graduationService.getThisSumMRecode(infoMap);
+		log.info("sumThisMsRecode(금학기 전선 합계) : " + sumThisMsRecode);
+
+		int sumEsRecode = this.graduationService.getSumERecode(infoMap);
+		log.info("sumEsRecode(교선 합계) : " + sumEsRecode);
+
+		int sumThisEsRecode = this.graduationService.getThisSumERecode(infoMap);
+		log.info("sumThisEsRecode(금학기 교선 합계) : " + sumThisEsRecode);
+
+		//전필, 전선, 교필, 교선 합계 Map에 담기
+		Map<String, Object> recordMap = new HashMap<String, Object>();
+		recordMap.put("sumMrRecode", sumMrRecode);
+		recordMap.put("sumThisMrRecode", sumThisMrRecode);
+
+		recordMap.put("sumErRecode", sumErRecode);
+		recordMap.put("sumThisErRecode", sumThisErRecode);
+
+		recordMap.put("sumMsRecode", sumMsRecode);
+		recordMap.put("sumThisMsRecode", sumThisMsRecode);
+
+		recordMap.put("sumEsRecode", sumEsRecode);
+		recordMap.put("sumThisEsRecode", sumThisEsRecode);
+
+		log.info("recordMap : " + recordMap);
+
+		model.addAttribute("recordMap", recordMap);
+
+
+		return "graduation/selfTest";
+	}
+
+	//요청URI : /grad/earlyGraduation
+	@GetMapping("/earlyGraduation")
+	public String earlyGraduation(HttpSession session, Model model) {
+
+		UserVO userVO = (UserVO) session.getAttribute("userVO");
+		int stuNum = userVO.getUsername();
+		log.info("leaveReturnStu의 stuNum : " + stuNum);
+
+		Map<String, Object> stuInfoMap = this.graduationService.getStuInfo(stuNum);
+		log.info("delayGraduation의 stuInfoMap : " + stuInfoMap);
+
+
+		model.addAttribute("stuInfo", stuInfoMap);
+
+		return "graduation/earlyGraduation";
+	}
+
+	@ResponseBody
+	@PostMapping("/earlyGraduation")
+	public Map<String, Object> earlyGraduation(HttpSession session){
+
+		UserVO userVO = (UserVO) session.getAttribute("userVO");
+		int stuNum = userVO.getUsername();
+		log.info("earlyGraduation의 stuNum : " + stuNum);
+
+		Map<String, Object> resultMap = new HashMap<String, Object>();
+
+		//평균평점 조회
+		Map<String, Object> avgMap = this.graduationService.getAvgFscore(stuNum);
+		log.info("earlyGraduation의 avgMap : " + avgMap);
+		double avgFscore = Double.parseDouble(String.valueOf(avgMap.get("AVG_FSCORE")));
+
+		if(avgFscore < 4) {
+			resultMap.put("result", "lowScore");
+			resultMap.put("avgFscore", avgFscore);
+			return resultMap;
+		}
+
+		//F학점 갯수 조회
+		int fCnt = this.graduationService.getFCnt(stuNum);
+		log.info("earlyGraduation의 fCnt : " + fCnt);
+
+		if(fCnt > 0) {
+			resultMap.put("result", "fExist");
+			return resultMap;
+		}
+
+		int result = this.graduationService.appEG(avgMap);
+		log.info("earlyGraduation의 result : " + result);
+
+		if(result > 0) {
+			resultMap.put("result", "success");
+			return resultMap;
+		}else {
+			resultMap.put("reuslt", "fail");
+			return resultMap;
+		}
+
+	}
+
+
+	//요청URI : /grad/delayGraduation
+	@GetMapping("/delayGraduation")
+	public String delayGraduation(HttpSession session ,Model model) {
+
+		UserVO userVO = (UserVO) session.getAttribute("userVO");
+		int stuNum = userVO.getUsername();
+		log.info("leaveReturnStu의 stuNum : " + stuNum);
+
+		Map<String, Object> stuInfoMap = this.graduationService.getStuInfo(stuNum);
+		log.info("delayGraduation의 stuInfoMap : " + stuInfoMap);
+
+
+		model.addAttribute("stuInfo", stuInfoMap);
+
+		return "graduation/delayGraduation";
+	}
+
+}

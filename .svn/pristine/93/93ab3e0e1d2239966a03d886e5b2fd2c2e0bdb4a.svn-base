@@ -1,0 +1,26 @@
+package kr.or.ddit.mapper;
+
+import java.util.List;
+import java.util.Map;
+
+import kr.or.ddit.vo.DepartmentFileVO;
+import kr.or.ddit.vo.DepartmentNoticeVO;
+
+public interface DPNoticeBoardMapper {
+
+	public int getDnNum();
+
+	public int createPost(DepartmentNoticeVO dnVO);
+
+	public int createPostFiles(List<DepartmentFileVO> dfVOList);
+
+	public List<DepartmentNoticeVO> getDPNoticeList(int deptNum);
+
+	public int getTotal(Map<String, Object> map);
+
+	public List<DepartmentNoticeVO> getDPNoticeList(Map<String, Object> map);
+
+
+
+
+}

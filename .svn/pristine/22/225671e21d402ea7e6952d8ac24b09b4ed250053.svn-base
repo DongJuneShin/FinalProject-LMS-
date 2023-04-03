@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.or.ddit.mapper.MessageMapper">
+
+	<select id="getNoteList" parameterType="uservo" resultType="notevo">
+		SELECT NOTE_NUM, NOTE_SEND, SEND_NM, NOTE_REV, REV_NM, NOTE_TITLE, NOTE_CONTENT, NOTE_DT, NOTE_STATUS  
+		FROM NOTE
+		WHERE NOTE_REV = #{username} OR NOTE_SEND = #{username}
+		ORDER BY 8
+	</select>
+
+	<select id="unReadMsgCount" resultType="int">
+		SELECT count(*) 
+		FROM NOTE
+		WHERE NOTE_REV = #{username} AND NOTE_STATUS = 0
+	</select>
+	
+	<select id="sendMsgCount" resultType="int">
+		SELECT count(*) 
+		FROM NOTE
+		WHERE NOTE_SEND = #{username}
+	</select>
+	
+	<select id="revMsgCount" resultType="int">
+		SELECT count(*) 
+		FROM NOTE
+		WHERE NOTE_REV = #{username}
+	</select>
+	
+	<select id="totalCount" resultType="int">
+		SELECT count(*) 
+		FROM NOTE
+		WHERE NOTE_REV = #{username} OR NOTE_SEND = #{username}
+	</select>
+	
+	<select id="stuList" resultType="studentvo">
+		SELECT 
+			STU_NUM, DEPT_NUM, STU_NM_KOR, STU_NM_ENG, 
+			STU_REG1, STU_REG2, STU_EMAIL, STU_PN, STU_PHOTO, STU_MS, STU_HDC, 
+			STU_NATION, STU_ZIP, STU_ADDR1, STU_ADDR2, STU_MINOR, STU_DMAJOR, STU_BANK, STU_ACCOUNT, STU_STATUS, STU_SEMESTER 
+		 FROM STUDENT
+		 WHERE STU_STATUS = 0 OR STU_STATUS = 1 OR STU_STATUS = 5
+	</select>
+	
+	<select id="teaList" resultType="teachervo">
+		SELECT 
+			TEA_NUM, DEPT_NUM, TEA_NM_KOR, TEA_NM_ENG, TEA_PN, 
+			TEA_REG1, TEA_REG2, TEA_EMAIL, TEA_PHOTO, TEA_ZIP, TEA_ADDR1, TEA_ADDR2, MAJOR, TEA_LNUM, 
+			TEA_LNM, TEA_NATION, TEA_TITLE, TEA_BANK, TEA_ACCOUNT, TEA_HDC
+		 FROM TEACHER
+	</select>
+	
+	<select id="empList" resultType="adminvo">
+		SELECT 
+			EMP_NUM, EMP_NM_KOR, EMP_NM_ENG, EMP_PHOTO, EMP_PN, EMP_EMAIL, 
+			EMP_REG1, EMP_REG2, EMP_NATION, EMP_ZIP, EMP_ADDR1, EMP_ADDR2, EMP_GROUP, EMP_DP, EMP_TITLE, EMP_MS, EMP_HDC, EMP_BANK, EMP_ACCOUNT
+		 FROM EMPLOYEE
+	</select>
+
+</mapper>

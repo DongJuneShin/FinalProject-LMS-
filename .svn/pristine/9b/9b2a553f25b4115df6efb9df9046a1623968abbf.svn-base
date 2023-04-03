@@ -1,0 +1,152 @@
+package kr.or.ddit.academic;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpSession;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import kr.or.ddit.academic.service.AcademicService;
+import kr.or.ddit.course.service.CourseService;
+import kr.or.ddit.vo.AcademicVO;
+import kr.or.ddit.vo.CourseDetailVO;
+import kr.or.ddit.vo.CourseNoticeVO;
+import kr.or.ddit.vo.CourseReferenceVO;
+import kr.or.ddit.vo.CourseVO;
+import kr.or.ddit.vo.UserVO;
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
+@Controller
+@RequestMapping("/academic")
+public class academicController {
+	
+	@Autowired
+	AcademicService academicService;
+	
+	//요청URI : /academic/acaListStu
+	@GetMapping("/acaListStu")
+	public String acaListStu(Model model) {
+		return "academic/acaList_stu";
+	}
+	
+	//요청URI : /academic/acaListAdm
+	@GetMapping("/acaListAdm")
+	public String acaListAdm(Model model) {
+		return "academic/acaList_adm";
+	}
+	
+	//요청URI : /academic/leaveReturnStu
+	@GetMapping("/leaveReturnStu")
+	public String leaveReturnStu(HttpSession session,
+								 Model model) {
+		
+		UserVO userVO = (UserVO) session.getAttribute("userVO");
+		int stuNum = userVO.getUsername();
+		log.info("leaveReturnStu의 stuNum : " + stuNum);
+		
+		Map<String, Object> stuInfoMap = this.academicService.getStuInfo(stuNum);
+		log.info("leaveReturnStu의 stuInfoMap : " + stuInfoMap);		
+		
+		model.addAttribute("stuInfo", stuInfoMap);
+		
+		return "academic/leaveReturn_stu";
+	}
+	
+	@ResponseBody
+	@PostMapping("/leaveStu")
+	public Map<String,Object> leaveStu(HttpSession session 
+					 , @RequestBody AcademicVO academicVO) {
+		log.info("leaveStu의 academicVO : " + academicVO);
+		
+		UserVO userVO = (UserVO) session.getAttribute("userVO");
+		int stuNum =userVO.getUsername();
+		log.info("leaveStu의 stuNum : " + stuNum);
+		academicVO.setStuNum(stuNum);
+		log.info("leavetStu의 academicVO2 : " + academicVO);
+		
+		Map<String, Object> cntMap = new HashMap<String, Object>();
+		//stuNum, acList
+		cntMap.put("stuNum", stuNum);
+		cntMap.put("acList", academicVO.getAcList());
+		log.info("leaveStu의 cntMap : " + cntMap);
+		int resultCnt = this.academicService.getAcCnt(cntMap);
+		log.info("leaveStu의 resultCnt : " + resultCnt);
+		Map<String,Object> map = new HashMap<>();
+		int result = 0;
+		
+		if(resultCnt > 0) {
+			log.info("여기걸림1");
+			result = -1;
+			log.info("여기걸림1 다음 result : " + result);
+		}else {
+			result = this.academicService.appLeave(academicVO);
+			log.info("leaveStu의 result : " + result);
+			
+		}
+		
+		map.put("result", result);
+		return map;
+	}
+	
+	/**
+	 * 학적상태 판별
+	 * @param session
+	 * @param stuNum
+	 * @return
+	 */
+	@ResponseBody
+	@PostMapping("/searchLeave")
+	public int searchLeave(HttpSession session) {
+		
+		UserVO userVO = (UserVO) session.getAttribute("userVO");
+		int stuNum = userVO.getUsername();
+		
+		log.info("searchLeave의 stuNum : " + stuNum);
+		int num = this.academicService.getStuStatus(stuNum);
+		int result = 0;
+		
+		log.info("searchLeave의 result : " + result);
+		if(num == 1) {
+			result = 1;
+		}else {
+			result = -1;
+		}
+		
+		log.info("searchLeave의 result : " + result);
+		return result;
+	}
+	
+	//요청URI : /academic/acaTRStu
+	@GetMapping("/acaTRStu")
+	public String acaTRStu(Model model) {
+		return "academic/acaTR_stu";
+	}
+	
+	//요청URI : /academic/acaDropout
+	@GetMapping("/acaDropout")
+	public String acaDropout(Model model) {
+		return "academic/acaDropout_stu";
+	}
+	
+	
+}
+
+
+
+
+
+
+
+

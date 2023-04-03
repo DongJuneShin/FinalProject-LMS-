@@ -1,0 +1,63 @@
+package kr.or.ddit.lecture.controller;
+
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import kr.or.ddit.lecture.service.LectureService;
+import kr.or.ddit.vo.LectureEvaVO;
+import kr.or.ddit.vo.UserVO;
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
+@RequestMapping("/le")
+@Controller
+public class LectureController {
+	@Autowired
+	LectureService lectureService;
+	/***
+	 * 강의평가
+	 * 학생
+	 */
+	@GetMapping("/leStuList")
+	public String stuLectureList(@RequestParam Map<String, Object> map,
+			HttpServletRequest request, Model model) {
+		
+		HttpSession session = request.getSession();
+		UserVO userVO = (UserVO) session.getAttribute("userVO");
+		
+		map.put("stuNum", userVO.getUsername());
+		
+		
+		List<LectureEvaVO> stuLectureList = this.lectureService.stuLectureList(map);
+		List<LectureEvaVO> lectureList = this.lectureService.lectureListList();//항목리스트 가져오기
+		
+		log.info("++++++++++++++++++++++++++++++++++");
+		log.info("stuLectureList : " + stuLectureList);
+		log.info("++++++++++++++++++++++++++++++++++");
+		
+		model.addAttribute("data", stuLectureList);
+		model.addAttribute("lectureList", lectureList);
+		return "le/leStuList";
+	}
+	
+	/**
+	 * 강의평가 조회
+	 * 교수 : 본인 강의만
+	 * 관리자 : 전체 강의
+	 */
+	
+	@GetMapping("/leCheck")
+	public void le_check() {
+		
+	}
+}

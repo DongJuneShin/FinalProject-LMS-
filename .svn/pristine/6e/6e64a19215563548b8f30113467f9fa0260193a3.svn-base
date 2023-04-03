@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+<mapper namespace="kr.or.ddit.mapper.ScholarshipMapper">
+	<!-- <sql id="sreComre">
+		<if test="sreComre !=null and sreComre = ''">
+			, sreComre=#{sreComre}
+		</if>
+	</sql> -->
+
+
+	<!-- (관리자) 학생 장학금 추천 리스트 조회 --> 
+	<select id="admScholarshipList" resultType="scholarshipVO">
+			SELECT B.STU_NM_KOR, C.TEA_NM_KOR, B.STU_NUM, B.STU_PN, E.DEPT_NM,
+		      A.SRE_REASON, 
+              CASE WHEN A.SRE_YN=0 THEN '대기'
+                   WHEN A.SRE_YN=1 THEN '승인'
+                   WHEN A.SRE_YN=2 THEN '반려'
+              END SRE_YN,
+		      A.SRE_SEMESTER, D.SL_NM
+		FROM SCHOLARSHIP_RECOMM A INNER JOIN STUDENT B
+		     ON(A.STU_NUM = B.STU_NUM)
+		     INNER JOIN TEACHER C
+		     ON(A.TEA_NUM = C.TEA_NUM)
+		     INNER JOIN SCHOLARSHIP_LIST D
+                        
+		     ON(D.SL_NUM=A.SL_NUM)
+		     INNER JOIN DEPARTMENT E 
+		     ON(E.DEPT_NUM = B.DEPT_NUM)
+	</select>
+	
+	<!-- 장학금 승인 리스트 -->
+	<select id="paymentsList" resultType="scholarshipVO">
+		SELECT A.SR_NUM, A.STU_NUM,
+		A.SL_NUM, C.DEPT_NM, D.SL_NM,B.STU_PN, 
+		B.STU_NM_KOR, D.SL_NM,
+		CASE WHEN A.SRE_YN=0 THEN '대기'
+		     WHEN A.SRE_YN=1 THEN '승인'
+		     WHEN A.SRE_YN=2 THEN '반려'
+		     END SRE_YN
+		FROM SCHOLARSHIP_REDETAIL A, STUDENT B, DEPARTMENT C, SCHOLARSHIP_LIST D
+		WHERE A.STU_NUM = B.STU_NUM
+		AND B.DEPT_NUM = C.DEPT_NUM
+		AND D.SL_NUM = A.SL_NUM
+		ORDER BY A.SR_NUM DESC
+	</select>
+	
+	<!-- (관리자) 장학생 추천받은 학생 1명 정보 가져오기 -->
+	<select id="showNum" resultType="scholarshipVO" parameterType="hashMap">
+		    SELECT A.STU_NUM, A.SRE_NUM, B.STU_NM_KOR , A.TEA_NUM, 
+	          	  A.SRE_REASON, A.SRE_YN, A.SRE_COMRE, 
+                  SUBSTR(A.SRE_SEMESTER,1,4) ||'년 ' || SUBSTR(A.SRE_SEMESTER,6,6) ||'학기' SRE_YSEMESTER
+		    FROM SCHOLARSHIP_RECOMM A, STUDENT B
+		    WHERE 
+		    A.STU_NUM = B.STU_NUM
+		    AND
+		    A.STU_NUM = #{showStuNum}
+	</select>
+	
+	<!-- (관리자) 장학금 지급 받은 학생 1명 정보 가져오기 -->
+	<select id="paymentNum" resultType="scholarshipVO" parameterType="hashMap">
+		SELECT A.STU_NUM , B.STU_NM_KOR, C.SL_NM, C.SL_AMT,
+		       SUBSTR(A.SRE_SEMESTER,1,4) ||'년 ' || SUBSTR(A.SRE_SEMESTER,6,6) ||'학기' SRE_YSEMESTER
+		  FROM SCHOLARSHIP_REDETAIL A, STUDENT B, SCHOLARSHIP_LIST C
+		  WHERE A.STU_NUM = B.STU_NUM
+		  AND A.SL_NUM = C.SL_NUM
+		  AND A.STU_NUM = #{showStuNum}
+	</select>
+	
+	
+	<!-- (학생) 장학금 수혜 내역 -->
+	<select id="stuScholarshipList" resultType="scholarshipVO" parameterType="hashMap">
+		SELECT S.STU_NUM, S.STU_NM_KOR,
+        SL.SL_NM, SL.SL_AMT,
+              SUBSTR(SR.SRE_SEMESTER,1,4) ||'년' SRE_YEAR,
+              SUBSTR(SR.SRE_SEMESTER,6,6) ||'학기' SRE_SEMESTER,
+              SUBSTR(SR.SRE_SEMESTER,1,4) ||'년 ' || SUBSTR(SR.SRE_SEMESTER,6,6) ||'학기' SRE_YSEMESTER 
+		FROM SCHOLARSHIP_LIST SL, SCHOLARSHIP_REDETAIL SR, STUDENT S
+		WHERE SL.SL_NUM = SR.SL_NUM
+		AND
+		S.STU_NUM = SR.STU_NUM
+		AND S.STU_NUM = #{stuNum}
+        ORDER BY SRE_YSEMESTER DESC
+	</select>
+	
+	<!-- (관리자) 장학생 추천 승인 -->
+	<update id="updateState" parameterType="hashMap">
+		update SCHOLARSHIP_RECOMM set
+		SRE_YN = #{status} where STU_NUM = #{stuNum}
+	</update>
+	
+	<!-- (관리자) 장학생 추천 반려 -->
+	<update id="updateState2" parameterType="hashMap">
+		update SCHOLARSHIP_RECOMM set
+		SRE_YN = #{status} , sre_comre=#{sreComre} where STU_NUM = #{stuNum}
+	</update>
+</mapper>

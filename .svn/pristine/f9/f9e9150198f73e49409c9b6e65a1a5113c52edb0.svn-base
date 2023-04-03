@@ -1,0 +1,13 @@
+package kr.or.ddit.tuition.service;
+
+import java.util.List;
+import java.util.Map;
+
+import kr.or.ddit.vo.TuitionVO;
+
+public interface TuitionService {
+		// 등록금 전체 조회 - 학생
+		public List<TuitionVO> stuTuitionList(Map<String, Object> map);
+		// 등록금 전체 조회 - 관리자
+		public List<TuitionVO> admTuitionList();
+}

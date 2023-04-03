@@ -1,0 +1,44 @@
+package kr.or.ddit.mapper;
+
+import java.util.List;
+import java.util.Map;
+
+import kr.or.ddit.vo.SubjectIndexVO;
+import kr.or.ddit.vo.SubjectVO;
+
+public interface EnrollMapper {
+	
+	/**
+	 * 전체 과목 리스트
+	 * @param subjectVO 교수 교번이 담긴 vo
+	 * @return 과목 리스트
+	 */
+	public List<SubjectVO> getSubjectList(SubjectVO subjectVO);
+
+	/**
+	 * 개설과목 테이블에 insert
+	 * @param param
+	 */
+	public void insertSubject(Map<String, Object> param);
+
+	/**
+	 * 강의계획서 테이블에 insert
+	 * @param param
+	 * @return 
+	 */
+	public int insertSubjectPlan(Map<String, Object> param);
+
+	/**
+	 * 강의 insert를 위해 과목번호 만들어오기
+	 * @param teaNum 강의를 신청한 담당 교수 교번
+	 * @return 과목번호
+	 */
+	public String makeSbjNum(int teaNum);
+	
+	/**
+	 * 학습목차 테이블에 insert
+	 * @param siVOList 1주차 ~ 15주차
+	 */
+	public void insertSubjectIndex(List<SubjectIndexVO> siVOList);
+
+}

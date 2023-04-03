@@ -1,0 +1,15 @@
+package kr.or.ddit.gradeobjection.service;
+
+import java.util.List;
+import java.util.Map;
+
+import kr.or.ddit.vo.CourseListVO;
+
+public interface GradeObjectionService {
+
+	// (학생) 수강내역 리스트
+	public List<CourseListVO> gradeObjectionList(Map<String, Object> map);
+	
+	// (학생) 학생정보 
+	public Map<String, Object> getStuInfo(int stuNum);
+}

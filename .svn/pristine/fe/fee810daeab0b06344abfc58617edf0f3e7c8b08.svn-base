@@ -1,0 +1,24 @@
+package kr.or.ddit.mapper;
+
+import java.util.List;
+
+import kr.or.ddit.vo.StudentVO;
+import kr.or.ddit.vo.TimeVO;
+
+public interface StudyTimetableMapper {
+
+	public List<StudentVO> getStuList(int roomNumber);
+
+	public List<TimeVO> getTimeTableData(int stuNum);
+
+	
+}
+
+
+
+
+
+
+
+
+

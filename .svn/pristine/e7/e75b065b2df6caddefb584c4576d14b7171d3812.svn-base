@@ -1,0 +1,19 @@
+package kr.or.ddit.exam;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
+@RequestMapping("/exam")
+@Controller
+public class ExamController {
+	
+	@GetMapping("/exam")
+	public String exam() {
+		
+		return "exam/examAdd";
+	}
+}

@@ -1,0 +1,137 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8"%>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/apexcharts/3.36.0/apexcharts.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+
+<script>
+
+var seri = [];
+var labe = [];
+
+ $.ajax({
+		url : "/graph/colleageCount",
+		contentType : 'application/json;charset=utf-8',
+		dataType : "json",
+		type : "post",
+		async : false,
+		//data : JSON.stringify(data),
+		beforeSend : function(xhr) {   // 데이터 전송 전  헤더에 csrf값 설정
+        	xhr.setRequestHeader("${_csrf.headerName}", "${_csrf.token}");
+		},
+		success : function(result){
+			//학과이름 가져오기
+			for(var i =0; i<result.colleageList.length; i++){
+				labe.push(result.colleageList[i].collNm);
+			}
+			//sumPeopleList
+			//단과대별 인원 가져오기
+			for(var i =0; i<result.sumPeopleList.length; i++){
+				seri.push(result.sumPeopleList[i].count);
+			}
+		}
+});
+
+document.addEventListener("DOMContentLoaded", () => {
+    new ApexCharts(document.querySelector("#donutChart"), {
+      //series: [44, 55, 13, 43, 22],
+      series: seri,
+      chart: {
+        height: 350,
+        type: 'donut',
+        toolbar: {
+          show: true
+        }
+      },
+     // labels: ['Team A', 'Team B', 'Team C', 'Team D', 'Team E'],
+      labels: labe,
+    }).render();
+  });
+
+
+var departList = [];
+var departCount = [];
+
+$.ajax({
+	url : "/graph/departmentCount",
+	contentType : 'application/json;charset=utf-8',
+	dataType : "json",
+	type : "post",
+	async : false,
+	//data : JSON.stringify(data),
+	beforeSend : function(xhr) {   // 데이터 전송 전  헤더에 csrf값 설정
+    	xhr.setRequestHeader("${_csrf.headerName}", "${_csrf.token}");
+	},
+	success : function(result){
+		for(var i =0; i<result.departSumPeople.length; i++){
+			departList.push(result.departSumPeople[i].deptNm);
+			departCount.push(result.departSumPeople[i].count);
+		}
+	}
+});
+
+
+
+document.addEventListener("DOMContentLoaded", () => {
+    new ApexCharts(document.querySelector("#barChart"), {
+      series: [{
+        data: departCount
+      }],
+      chart: {
+        type: 'bar',
+        height: 350
+      },
+      plotOptions: {
+        bar: {
+          borderRadius: 4,
+          horizontal: true,
+        }
+      },
+      dataLabels: {
+        enabled: false
+      },
+      xaxis: {
+        categories: departList
+      }
+    }).render();
+  });
+
+</script>
+
+
+<div class="card">
+	<div class="card-header">
+		<div class="col-md-12">
+			<h5>단과대 구분 총지표</h5>
+		</div>
+		<br>
+		<br>
+		<div class="container">
+			<div class="row">
+				<div class="col-lg-6">
+					<div class="card">
+						<div class="card-body">
+							<h5 class="card-title">단과대별 총원백분율</h5>
+								<!-- Donut Chart -->
+								<div id="donutChart"></div>
+								<!-- End Donut Chart -->
+						</div>
+					</div>
+				</div>
+				<div class="col-lg-6">
+					<div class="card">
+						<div class="card-body">
+							<h5 class="card-title">학과별 총정원</h5>
+								  <div id="barChart"></div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+	<!-- 	<div class="container">
+
+		</div> -->
+
+
+	</div>
+</div>

@@ -1,0 +1,75 @@
+package kr.or.ddit.course.controller;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.inject.Inject;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import kr.or.ddit.course.service.CourseService;
+import kr.or.ddit.vo.CourseListVO;
+import kr.or.ddit.vo.SubjectVO;
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
+@RequestMapping("/course")
+@Controller
+public class CourseReportController {
+	
+	@Inject
+	CourseService courseService ;
+	
+	/***
+	 * 성적 입력창으로 넘어 올 시
+	 * 메인/강의목록/${강의정보}
+	 * 강의정보 값 가져오기
+	 * @param sbjNum
+	 * @param sbjTitle
+	 */
+	@GetMapping("/reportCard")
+	public void reportCard(@RequestParam("sbjNum") String sbjNum , 
+						   @RequestParam("sbjTitle") String sbjTitle,
+						   Model model) {
+		
+		log.info("==========================================");
+		log.info("sbjNum : "+sbjNum);
+		log.info("sbjTitle : "+sbjTitle);
+		
+		String getSubjectInfo = courseService.getSubjectInfo(sbjNum);//해당 과목 상세 정보 가져오기
+		List<CourseListVO> getCourseListInfo = courseService.getCourseListInfo(sbjNum);//해당 과목을 듣는 현재학기 학생 목록 가져오기
+		
+		log.info("getSubjectInfo: "+getSubjectInfo);
+		log.info("getCourseListInfo: "+getCourseListInfo);
+		
+		model.addAttribute("getSubjectInfo", getSubjectInfo);
+		model.addAttribute("getCourseListInfo", getCourseListInfo);
+		model.addAttribute("sbjNum", sbjNum);
+	}
+	
+	/***
+	 * 해당 과목의 출석 즉 45점 만점 중 몇점인지 소계를 가져옴
+	 * @param map
+	 * @return
+	 */
+	@ResponseBody
+	@PostMapping("/getWeekSum")
+	public Map<String,Object> getWeekSum(@RequestBody Map<String,Object> map){
+		log.info("getWeekSum에서 넘어온 값 : "+map);
+		SubjectVO getWeekSum = courseService.getWeekSum(map);
+		
+		log.info("getWeekSum : "+getWeekSum);
+		
+		Map<String,Object> map2 = new HashMap<>();
+		map2.put("getWeekSum", getWeekSum);
+		return map2;
+	}
+}

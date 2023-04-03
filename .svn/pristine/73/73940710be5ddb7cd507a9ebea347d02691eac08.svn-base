@@ -1,0 +1,16 @@
+package kr.or.ddit.student.service;
+
+
+import java.util.List;
+
+import kr.or.ddit.vo.StudentVO;
+
+public interface StuService {
+	
+	/**
+	 * 등록된 학생 목록을 불러오는 최초의 메소드 
+	 * @return 학생 목록
+	 */
+	public List<StudentVO> stuList();
+
+}

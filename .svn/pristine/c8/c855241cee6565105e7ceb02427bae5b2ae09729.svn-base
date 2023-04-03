@@ -1,0 +1,20 @@
+package kr.or.ddit.dp.service.impl;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import kr.or.ddit.dp.service.IDPNotieBoardService;
+import kr.or.ddit.mapper.DPNoticeBoardMapper;
+
+@Service
+public class DPNoticeBoardServiceImpl implements IDPNotieBoardService{
+
+	@Autowired
+	DPNoticeBoardMapper mapper;
+	
+	@Override
+	public int getDnNum() {
+		return mapper.getDnNum();
+	}
+
+}

@@ -1,0 +1,25 @@
+package kr.or.ddit.controller;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+@RequestMapping("/tuition")
+@Controller
+public class Yg_tuitionController {
+
+	/**
+	 * 등록금 납부 내역
+	 * 학생
+	 */
+	@GetMapping("/tuition")
+	public void tuition() {}
+	
+	/**
+	 * 등록금 납부 내역
+	 * 관리자
+	 */
+	@GetMapping("/tuition_admin")
+	public void tuition_admin() {}
+	
+}

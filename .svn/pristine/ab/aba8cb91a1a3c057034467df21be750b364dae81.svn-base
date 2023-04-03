@@ -1,0 +1,5 @@
+package kr.or.ddit.study.chat.service;
+
+public interface StudyChatService {
+
+}

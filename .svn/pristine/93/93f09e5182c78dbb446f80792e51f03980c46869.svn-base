@@ -1,0 +1,74 @@
+package kr.or.ddit.employee;
+
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import kr.or.ddit.employee.service.EmployeeService;
+import kr.or.ddit.vo.AdminVO;
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
+@RequestMapping("/manage")
+@Controller
+public class EmployeeController {
+	
+	@Autowired
+	EmployeeService employeeService; 
+	/**
+	 * 교직원 조회
+	 * 관리자
+	 */
+	@GetMapping("/empManage")
+	public String admList(Model model) {
+		
+		List<AdminVO> admList = this.employeeService.admList();
+		model.addAttribute("data", admList);
+		
+		log.info("empManage에서 온 값 : " + admList);
+		return "manage/empManage";
+	}
+	
+	/**
+	 * 교직원 상세조회
+	 * 관리자
+	 */
+	@ResponseBody
+	@PostMapping
+	public AdminVO empNum(Map<String, Object> map) {
+		log.info("empNum에서 map의 값 : " + map);
+		return null;
+	}
+	
+	
+	
+	
+	
+	
+	
+	/**
+	 * 학과 조회
+	 * 관리자
+	 */
+	@GetMapping("/deptManage")
+	public String deptManage() {
+		return "manage/deptManage";
+	}
+	
+	/**
+	 * 총 지표
+	 * 관리자
+	 */
+	@GetMapping("/graph")
+	public String graph() {
+		return "manage/graph";
+	}
+	
+}

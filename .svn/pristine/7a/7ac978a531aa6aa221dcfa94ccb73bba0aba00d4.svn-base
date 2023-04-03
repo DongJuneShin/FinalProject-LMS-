@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.ddit.mapper.LectureMapper">
+
+	<!-- (학생) 강의평가 조회 -->
+	<select id="stuLectureList" resultType="lectureEvaVO" parameterType="HashMap">
+		SELECT A.SBJ_TITLE,  C.TEA_NM_KOR, B.STU_NUM ,  A.SBJ_NUM , COUNT(D.LE_NUM) COUNT
+		FROM SUBJECT A, COURSE_LIST B, TEACHER C , LECTURE_EVA D
+		WHERE A.SBJ_NUM = B.SBJ_NUM
+		AND A.TEA_NUM = C.TEA_NUM
+		AND B.STU_NUM = #{stuNum}
+		AND A.SBJ_NUM = D.SBJ_NUM(+)
+		GROUP BY A.SBJ_TITLE,  C.TEA_NM_KOR, B.STU_NUM, A.SBJ_NUM
+	</select>
+	
+	<select id="lectureListList" resultType="lectureEvaVO">
+		select LEL_NUM, LEL_CONTENT
+		from LECTURE_LIST
+		order by LEL_NUM asc
+	</select>
+	
+	<select id="studentVO" parameterType="hashMap" resultType="stuVO">
+		SELECT STU_NUM , STU_NM_KOR
+		FROM STUDENT
+		WHERE STU_NUM = #{stuNum}
+	</select>
+
+	<select id="getClNum" parameterType="hashMap" resultType="string">
+	  SELECT CL_NUM
+		FROM COURSE_LIST
+		WHERE SBJ_NUM=#{sbjNum}
+		AND
+		STU_NUM=#{stuNum}
+	</select>
+	
+	<select id="getLeNum" parameterType="hashMap" resultType="string">
+		select  NVL(LE_NUM, TO_CHAR(0)) AS LE_NUM
+			from lecture_eva
+			where 
+			LEL_NUM = #{lelNum}
+			and
+			cl_num = #{clNum}
+			and
+			sbj_num = #{sbjNum}
+			and
+			stu_num = #{stuNum}
+	</select>
+	
+	<update id="insertLecEva" parameterType="HashMap">
+		MERGE INTO LECTURE_EVA A 
+		USING DUAL
+		ON(A.LE_NUM=#{leNum}) 
+		WHEN MATCHED THEN 
+		    UPDATE SET LE_REPLY = #{answer}
+		WHEN NOT MATCHED THEN 
+		    INSERT(LE_NUM, LEL_NUM, CL_NUM, SBJ_NUM, STU_NUM, LE_REPLY)
+		    VALUES(TO_CHAR(SEQ_LECTURE_EVALUATION.NEXTVAL), #{lelNum}, #{clNum}, #{sbjNum}, #{stuNum}, #{answer})
+	</update>
+</mapper>

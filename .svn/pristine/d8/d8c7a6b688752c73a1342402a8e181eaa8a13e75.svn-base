@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.or.ddit.mapper.StudyGeneralMapper">
+	
+	<select id="getStudyList" parameterType="studyVO" resultType="studyVO">
+		SELECT S_NUM, STU_NUM, S_NM, S_DT, S_GRADE, S_COUNT, 
+<![CDATA[		(SELECT COUNT(*) FROM STUDY WHERE S_NUM = A.S_NUM AND S_GRADE < 2) AS stuCount 	]]>
+		FROM STUDY A
+		WHERE STU_NUM = #{stuNum}
+	</select>
+	
+	<select id="getStudy" parameterType="studyVO" resultType="studyVO">
+		SELECT S_NUM, STU_NUM, S_NM, S_DT, S_GRADE, S_COUNT
+		FROM STUDY
+		WHERE S_NUM = #{sNum}
+		AND STU_NUM = #{stuNum}
+	</select>
+	
+	<delete id="deleteStudy" parameterType="studyVO">
+		DELETE FROM STUDY WHERE S_NUM = #{sNum} AND STU_NUM = #{stuNum}
+	</delete>
+	
+	<update id="updateStudy" parameterType="studyVO">
+		UPDATE STUDY SET S_GRADE = 0 WHERE S_NUM = #{sNum} AND STU_NUM = #{stuNum}
+	</update>
+	
+</mapper>
+

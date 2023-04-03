@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+<mapper namespace="kr.or.ddit.mapper.GradeMapper">
+
+	<!-- 학생 -->
+	<select id="getStudentInfo" parameterType="int" resultType="stuVO">
+		SELECT STU_NUM, DEPT_NUM, STU_NM_KOR, STU_NM_ENG, STU_REG1, STU_REG2, 
+		       STU_EMAIL, STU_PN, STU_PHOTO, STU_MS, STU_HDC, STU_NATION, 
+		       STU_ZIP, STU_ADDR1, STU_ADDR2, STU_MINOR, STU_DMAJOR, STU_BANK, 
+		       STU_ACCOUNT, STU_STATUS, STU_SEMESTER
+		FROM STUDENT
+		WHERE STU_NUM = #{stuNum}
+	</select>
+	
+	<!-- 해당 학생의 현재까지의 학점총점 , 학점의 갯수 , 학점의 총 평균을 가져오기-->
+	<select id="avgScore" parameterType="int" resultType="courseListVO">
+		select t.CL_FSCORE , t.COUNT_FSCORE , round((t.CL_FSCORE/t.COUNT_FSCORE),2) AVG_CL_FSCORE
+			from(
+			    select stu_num , sum(CL_FSCORE) CL_FSCORE , count(cl_fscore) COUNT_FSCORE
+			    from course_list
+			    where stu_num = #{stuNum}
+			    group by stu_num
+			) t
+		group by t.CL_FSCORE , t.COUNT_FSCORE
+	</select>
+	
+	<!-- 해당 학생의 교양학점 가져오기 -->
+	<select id="kyoYangScore" parameterType="int" resultType="courseListVO">
+		SELECT B.CL_SEMESTER ,A.DEPT_NUM ,A.SBJ_TITLE, COUNT(A.DEPT_NUM) COUNT
+		    FROM SUBJECT A , COURSE_LIST B
+		    WHERE A.SBJ_NUM = B.SBJ_NUM
+		    AND
+		    B.STU_NUM = #{stuNum}
+		    AND
+		    A.DEPT_NUM = 0
+		    GROUP BY  GROUPING SETS(A.DEPT_NUM,B.CL_SEMESTER ,A.SBJ_TITLE,())
+		    HAVING B.CL_SEMESTER IS NOT NULL
+		    ORDER BY B.CL_SEMESTER , A.DEPT_NUM, A.SBJ_TITLE
+	</select>
+		
+	<!-- 내가 수강한 학기 중복제거로 가저오기 -->
+	<select id="myClsemesterList" parameterType="int" resultType="courseListVO">
+		SELECT distinct(CL_SEMESTER)
+			FROM COURSE_LIST
+			WHERE STU_NUM = #{stuNum}
+			ORDER BY CL_SEMESTER desc
+	</select>
+		
+	<!-- 내가 수강한 과목의 성적과 학점 가져오기 -->
+	<select id="myCourseListtt" parameterType="int" resultType="courseListVO">
+		SELECT  A.CL_SEMESTER, TRIM(TO_CHAR(a.CL_FSCORE, '99999999.99')) CL_FSCORE , B.SBJ_TITLE
+			FROM COURSE_LIST A , SUBJECT B
+			WHERE A.SBJ_NUM = B.SBJ_NUM
+			AND
+			A.STU_NUM = #{stuNum}
+			ORDER BY A.CL_SEMESTER DESC
+	</select>
+</mapper>

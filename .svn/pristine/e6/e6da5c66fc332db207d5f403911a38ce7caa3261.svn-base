@@ -1,0 +1,32 @@
+package kr.or.ddit.graduation.service;
+
+import java.util.Map;
+
+public interface GraduationService {
+
+	//학생 학적정보 출력
+	//<select id="getStuInfo" parameterType="int" resultType="hashMap">
+	public Map<String, Object> getStuInfo(int stuNum);
+
+	//전공 이수학점 조회(전필/전선)
+	public int getSumMRecode(Map<String, Object> infoMap);
+
+	//교양 이수학점 조회(교필/교선)
+	public int getSumERecode(Map<String, Object> infoMap);
+
+	//금학기 전공 이수학점 조회(전필/전선)
+	public int getThisSumMRecode(Map<String, Object> infoMap);
+
+	//금학기 교양 이수학점 조회(교필/교선)
+	public int getThisSumERecode(Map<String, Object> infoMap);
+
+	//전체학기 평균평점 조회
+	public Map<String, Object> getAvgFscore(int stuNum);
+
+	//F학점 갯수 조회
+	public int getFCnt(int stuNum);
+
+	//(학생)조기졸업 신청
+	public int appEG(Map<String, Object> egMap);
+
+}

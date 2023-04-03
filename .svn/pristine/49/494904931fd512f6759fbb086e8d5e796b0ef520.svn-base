@@ -1,0 +1,510 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>시험문제 출제하기</title>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<script>
+	var queList = 1;	//문제에 대한 항목 번호
+	var que = 1;  		//문제번호
+
+	$(function() {
+		var examqueList = [];//문제들이 여러개이니 배열로 담음
+		var question = "";	//해당 번호에 대한 질문 값
+		var queAns = "";	//문제에 대한 정답
+		var sbjNum = "";	//과목번호
+		var examNum = 0;	//exam테이블에서 exmNum값                 --시험등록테이블(첫번째)
+		var exmqueNum = 0;	//examQue테이블에서 examqueNum의 값		 --시험문제테이블(두번째)
+		var queListArr = []; //추가될때마다 숫자가 들어감
+		var moveQue = "";	//동적으로 움직이는 문제번호
+
+		//문제 추가하기
+		$("#addExam").on("click",function(){
+			queListArr=[];//문제 넣는 배열 초기화
+
+			if($("#queAnswer"+que).val() == null ||  $("#queAnswer"+que).val() == ""){
+				alert("정답을 체크 해주세요!");
+				return false;
+			}
+			if(queList <5){
+				alert("항목은 4개를 작성하여야 합니다");
+				return false;
+			}
+			que++;
+			queList=1;
+
+
+			alert("문제 추가 한 후 que의 값 : "+que);
+			alert("문제 추가 한 후 queList의 값 : "+queList);
+
+			var str = "<br>";
+				str+= "<br>";
+			    str+= "<div style='margin-left:auto; margin-right:auto; border-radius: 8px; background:white; width:500px; height : 350px;'>";
+				str+= "<br id='brbr"+que+"'>";
+				str+= "<input placeholder='질문' id='que_"+que+"' style='width:350px; height:40px; border:none; margin-left : 20px; background: #e2e1e3; border-bottom: 1px solid #9b9a9c;' type='text'>";
+				str+= "<br>";
+				str+= "<br>";
+				str+= "<div id='buttonDiv_"+que+"' style='margin-left : 20px;'>";
+				str+= "<button type='button' id='optionAdd_"+que+"' class='btn btn-light'>옵션추가</button>";
+				str+= "<button type='button' id='optionMinus_"+que+"' class='btn btn-light'>옵션삭제</button>";
+				str+= "<button type='button' id='answer_"+que+"' class='btn btn-light'>정답</button>";
+				str+= "</div>";
+				str+= "</div>";
+				str+= "<br>";
+				//$("#examDiv").prev().before(str);
+				$("#examDiv").before(str);
+				//$("#examDivPrev").after(str);
+
+				//옵션추가
+				$("#optionAdd_"+que).bind("click", function(){
+					addQueList(que);
+				});
+				//옵션삭제
+				$("#optionMinus_"+que).bind("click", function(){
+					var thisMinus = $(this).attr("id");
+					minusQueList(que,thisMinus);
+				});
+				//정답
+				$("#answer_"+que).bind("click", function(){
+					answerQue(que);
+				});
+
+		})//addExam끝
+
+		//동적으로 생성된 정답체크 이벤트 넣기
+		function answerQue(que){
+			alert("bind된 정답 버튼 누른 queList의 값 : "+queList);
+
+			if(queList<5){
+				alert("항목을 4개 설정 후 정답을 설정해주세요");
+				return false;
+			}
+
+
+	   		if($("#queAnswerDiv"+que).length > 0 ){
+	   			$("#queAnswer"+que).val(queAns);
+	   		}else{
+		   		 var str  = 	"<div id='queAnswerDiv"+que+"'>";
+					 str += 			"<span style='margin-left : 20px'>정답 : </span>";
+					 str += 			"<input type='text' id='queAnswer"+que+"' readonly/>";
+			   		 str += 	"</div>";
+			   		 $("#buttonDiv_"+que).before(str);
+					 $("#queAnswer"+que).val(queAns);
+	   		}
+		}
+
+		//동적으로 생성된 optionMinus 이벤트 넣기
+		function minusQueList(que,thisMinus){
+
+			alert("queListArr의 값 : "+queListArr);
+			alert("현재 옵션삭제 누른 번호awetawet : "+thisMinus);//optionMinus_2
+
+			var arr = thisMinus.split("_");
+
+			var currentQueList = $("#buttonDiv_"+que).prevAll().length-4;
+
+			if(currentQueList ==0){
+				alert("더 이상 삭제를 할수 없습니다!");
+			}else if(currentQueList == 5){
+				currentQueList=4;
+			}
+			$("#"+$("#span"+arr[1]).text()).remove();
+			//$("#span"+arr[1]).remove();
+			$("#queAnswerDiv"+arr[1]).remove();
+
+			for(let i = 0; i < queListArr.length; i++) {
+				 if(parseInt(queListArr[i]) === parseInt(arr[1]))  {
+					 queListArr.splice(i, 1);
+				    i--;
+				 }
+			}
+
+			alert("동적으로 생성된 옵션 삭제 한 후 : "+queListArr);
+
+			//부족한 배열 순서대로 다시 정렬
+			for(var i=0; i<queListArr.length; i++){
+				$("#queDiv_"+arr[1]+"-"+queListArr[i]).attr("id","queDiv_"+arr[1]+"-"+(i+1));
+				//queCheck_1-4
+				$("#queCheck_"+arr[1]+"-"+queListArr[i]).attr("id","queCheck_"+arr[1]+"-"+(i+1));
+				//queCheck_1-4value
+				$("#queCheck_"+arr[1]+"-"+queListArr[i]+"value").attr("id","queCheck_"+arr[1]+"-"+(i+1)+"value");
+			}
+
+
+			queList=parseInt($("div[id^=queDiv_"+arr[1]+"]").length+1);
+
+			alert("queList : "+queList);
+
+			queListArr = [];
+			for(var i =0; i<queList-1; i++){
+				queListArr.push(i+1);
+			}
+			alert("새로운 배열 queListArr의 값 : "+queListArr);
+		};
+
+		//동적으로 생성된 optionAdd 이벤트 넣기!!!!!!!!!!!!!!!!!!!!!!
+		function addQueList(que){
+			alert("동적으로 생성된 addQueList의 값 : "+que);
+
+			if(queList == 0){
+				queList=1;
+			}else if(queList==5){
+				alert("더 이상 항목 추가 할수 없습니다.");
+				return false;
+			}
+
+			var str = "<div id='queDiv_"+que+"-"+queList+"'>";
+	  	    //str+= 	  "<input name='que'  id='queCheck_"+que+"-"+queList+"' type='radio' class='que' style='margin-left : 20px;'/>";
+	  	    str+= 	  "<input name='que"+que+"'  id='queCheck_"+que+"-"+queList+"' type='radio' class='que"+que+"' style='margin-left : 20px;'/>";
+	        str+=     "<input type='text' id='queCheck_"+que+"-"+queList+"value' class='queText' placeholder='옵션' style='width:350px; height:40px; border:none; margin-left : 20px;' />";
+	   		str+=     "</div>";
+	   		if(queList == 0){
+	   			queList = 1;
+	   		}else if(queList==1){
+				 $("#buttonDiv_"+que).before(str);
+			}else if(queList>=2 && queList<=4){
+				 $("#queDiv_"+que+"-"+parseInt(queList-1)).after(str);
+			}else{
+				alert("더 이상 추가를 할수 없습니다!");
+				$("#queCheck_"+que+"-"+parseInt(queList-1)).val($("#queCheck_"+que+"-"+parseInt(queList-1)+"value").val());
+				return false;
+			}
+
+	   	 	$("#queCheck_"+que+"-"+parseInt(queList-1)).off("click");   // 이전 이벤트 설정 삭제
+	   	 	 queListArr.push(queList);
+			 queList++;
+
+			 alert("동적으로 만든 문제의 queListArr : "+queListArr);
+
+			 $("#queCheck_"+que+"-"+queList).on("click",function(){
+					//$(this).val($("#" + $(this).attr("id") + "value").val() );
+					alert("즐 : "+$(this).val());
+					queAns = $(this).val();
+			 });
+
+		}//동적으로 생성된 optionAdd 이벤트 넣기 끝!!!!!!!!!!!!!!!!!!!!!!
+
+
+		//문제 삭제하기
+		//$(document).on("click", "#minusExam",function(){
+		$("#minusExam").on("click",function(){
+			alert("안녕");
+			if(que ==1){
+				alert("더 이상 문제를 삭제 할 수 없습니다");
+				que=1;
+				queList=5;
+				return false;
+			}
+
+			$("#que_"+que).parent().remove();
+			que--;
+			queList=parseInt($("div[id^=queDiv_"+que+"]").length+1);
+			alert("문제 삭제 후 queList의 값 : "+queList);
+		})//minusExam끝
+
+		//정답설정 클릭
+		$("#answer_"+que).on("click",function(){
+			alert("bind 되지 않은 정답 버튼 누른 queList의 값 : "+queList);
+
+			//체크박스 클릭시 체크박스 옆에 해당하는 값을 가져와야함
+			//if(que!=1){
+				if(queList<5){
+					alert("항목을 4개 설정 후 정답을 설정해주세요");
+					return false;
+				}
+			//}
+
+			$("#queCheck_"+que+"-"+parseInt(queList-1)).val($("#queCheck_"+que+"-"+parseInt(queList-1)+"value").val());
+	   		if($("#queAnswerDiv"+que).length > 0 ){
+	   			$("#queAnswer"+que).val(queAns);
+	   		}else{
+		   		 var str  = 	"<div id='queAnswerDiv"+que+"'>";
+					 str += 			"<span style='margin-left : 20px'>정답 : </span>";
+					 str += 			"<input type='text' id='queAnswer"+que+"' readonly/>";
+			   		 str += 	"</div>";
+			   		 $("#buttonDiv_"+que).before(str);
+					 $("#queAnswer"+que).val(queAns);
+	   		}
+		});//"#answer_"+que 끝
+
+
+		//라디오버튼 클릭시
+		$(document).on("click","input[type=radio]", function(){
+
+
+			//arr의값 : queDiv_1,3
+ 			var arr = $(this).parent().attr("id").split("-");
+			var arrrr = arr[0].split("_");
+ 			alert("arr의값 : "+arr);
+			if($("#span"+arrrr[1]).length>0){
+				$("#span"+arrrr[1]).remove();
+				var str = "<span id='span"+arrrr[1]+"' style='display : none;'>"+$(this).parent().attr("id")+"</span>";
+				$("#brbr"+arrrr[1]).before(str);
+			}else{
+				var str = "<span id='span"+arrrr[1]+"' style='display : none;'>"+$(this).parent().attr("id")+"</span>";
+				$("#brbr"+arrrr[1]).before(str);
+			}
+
+
+			$(this).val($("#" + $(this).attr("id") + "value").val() );
+			queAns = $(this).val();
+		})
+
+
+		$(document).on("keypress", ".queText",function(){
+			$(this).parent().find(".que"+que).val($(this).val());
+		});
+
+		//옵션추가
+		$(document).on("click","#optionAdd_"+que, function(){
+			alert("동적말고 제대로 생성된 addQueList의 값 : "+que);
+			//문제의 항목이 추가 될때마다 배열에 넣음
+
+			var str = "<div id='queDiv_"+que+"-"+queList+"'>";
+	  	    str+= 	  "<input name='que"+que+"'  id='queCheck_"+que+"-"+queList+"' type='radio' class='que"+que+"' style='margin-left : 20px;'/>";
+	        str+=     "<input type='text' id='queCheck_"+que+"-"+queList+"value' class='queText' placeholder='옵션' style='width:350px; height:40px; border:none; margin-left : 20px;' />";
+	   		str+=     "</div>";
+
+	   		if(queList == 0){
+	   			queList = 1;
+	   		}else if(queList==1){
+				 $("#buttonDiv_"+que).before(str);
+			}else if(queList>=2 && queList<=4){
+				$("#buttonDiv_"+que).before(str);
+			}else{
+				alert("더 이상 추가를 할수 없습니다!");
+				$("#queCheck_"+que+"-"+parseInt(queList-1)).val($("#queCheck_"+que+"-"+parseInt(queList-1)+"value").val());
+				return false;
+			}
+
+	   	 	$("#queCheck_"+que+"-"+parseInt(queList-1)).off("click");   // 이전 이벤트 설정 삭제
+	   	 	 queListArr.push(queList);//배열에 값을 넣음
+			 queList++;
+
+			 $("#queCheck_"+que+"-"+queList).on("click",function(){
+					alert("즐 : "+$(this).val());
+					queAns = $(this).val();
+			 });
+
+			alert("queListArr의 값 : "+queListArr);
+		})//#optionAdd 끝
+
+		//옵션삭제
+		$(document).on("click","#optionMinus_"+que, function(){
+			alert("해당 클릭한 객체 : "+$(this).attr("id")); //optionMinus_1에서 맨 뒷자리 끊을꺼임
+			var optionSplit = $(this).attr("id").split("_");
+			alert("optionSplit의 값 : "+optionSplit[1]);
+
+			var split = $("#span"+optionSplit[1]).text().split("-"); //queDiv_1-1 에서 '-' 뒷자리 숫자를 배열에서 없앰
+			var splitt = split[0].split("_");		  //queDiv_1에서 '_' 기준으로 자름
+
+			alert("클릭한 문제번호 : "+splitt[1]);
+			alert("클릭한 문항의 값 : "+split[1]);
+
+			for(let i = 0; i < queListArr.length; i++) {
+				 if(parseInt(queListArr[i]) === parseInt(split[1]))  {
+					 queListArr.splice(i, 1);
+				    i--;
+				 }
+			}
+
+			alert("배열에서 삭제 한 후 : "+queListArr);
+
+			//부족한 배열 순서대로 다시 정렬
+			for(var i=0; i<queListArr.length; i++){
+				$("#queDiv_"+splitt[1]+"-"+queListArr[i]).attr("id","queDiv_"+splitt[1]+"-"+(i+1));
+				//queCheck_1-4
+				$("#queCheck_"+splitt[1]+"-"+queListArr[i]).attr("id","queCheck_"+splitt[1]+"-"+(i+1));
+				//queCheck_1-4value
+				$("#queCheck_"+splitt[1]+"-"+queListArr[i]+"value").attr("id","queCheck_"+splitt[1]+"-"+(i+1)+"value");
+			}
+
+
+
+			if(parseInt(queList-1) ==0){
+				alert("더 이상 삭제를 할수 없습니다!");
+			}
+			$("#"+$("#span"+optionSplit[1]).text()).remove();
+			$("#queAnswerDiv"+que).remove();
+
+			queList=parseInt($("div[id^=queDiv_"+que+"]").length+1);
+			alert("queList의 값 : "+queList);
+
+			queListArr = [];
+			for(var i =0; i<queList-1; i++){
+				queListArr.push(i+1);
+			}
+
+			alert("새로운 배열 queListArr의 값 : "+queListArr);
+
+			if($("#queAnswerDiv"+split[1]).length>0){
+				$("#queAnswerDiv"+split[1]).remove();
+			}
+		})//#optionMinus 끝
+
+		//시험 문제 출제!!
+		$("#submit").on("click",function(){
+			if(queList<4){
+				alert("항목은 4개여야 합니다");
+				return false;
+			}
+
+			for(var a = 1; a<=que; a++){
+				if($("#queAnswer"+a).val() == null || $("#queAnswer"+a).val() == ""){
+					alert(a+"번 정답을 체크해주세요.");
+					return false;
+				}
+			}
+
+			if(queList>4){
+				queList=4;
+			}
+
+			for(var j=1; j<=que; j++){
+				for(var i=1; i<=queList; i++){
+					$("#queCheck_"+j+"-"+i).val($("#queCheck_"+j+"-"+i+"value").val());
+				}
+			}
+
+
+
+
+			question = $("#que_1").val();
+			sbjNum = $("#sbjNum").text();
+			//que,queList,queAns
+			//alert("현재 que 값 : "+que + ", queList : "+queList+" , queAns : "+queAns +" , question : "+question);
+			alert("sbjNum : "+sbjNum);
+			/* 첫번째 질문 : que_que-queList
+			첫번째 체크박스 : queCheck_que_queList
+			첫번째 체크박스옆 값 : queCheck_que_queListvalue */
+
+			let data = {"sbjNum" : sbjNum};
+			//시험테이블에 온라인 시험 등록
+
+			$.ajax({
+		  		url : "/exam/examTable",
+		  		contentType : 'application/json;charset=utf-8',
+		  		dataType : "json",
+		  		type : "post",
+		  		async:false,
+		  		data : JSON.stringify(data),
+		  		 beforeSend : function(xhr) {   // 데이터 전송 전  헤더에 csrf값 설정
+	                xhr.setRequestHeader("${_csrf.headerName}", "${_csrf.token}");
+				},
+				success : function(result){
+					if(result.result>0){//0보다 크면 examTable에 등록 성공!!
+						examNum = result.examNum;
+					}
+				}
+			});//ajax끝
+
+
+	          for(var a = 1; a <=que; a++){
+		          let data2  = {"examNum" : examNum,
+								"sbjNum" : sbjNum,
+								"question" : $("#que_"+a).val(),
+								"queAns" : $("#queAnswer"+a).val()
+								};
+		      		//examQue테이블에 데이터 넣기
+					$.ajax({
+				  		url : "/exam/examQue",
+				  		contentType : 'application/json;charset=utf-8',
+				  		dataType : "json",
+				  		type : "post",
+				  		async:false,
+				  		data : JSON.stringify(data2),
+				  		 beforeSend : function(xhr) {   // 데이터 전송 전  헤더에 csrf값 설정
+			                xhr.setRequestHeader("${_csrf.headerName}", "${_csrf.token}");
+						},
+						success : function(result){
+							exmqueNum = result.exmqueNum;
+							examqueList.push(exmqueNum);
+						}
+					});//ajax끝
+	          }//for문 끝
+	        var count = 0;
+	      	for(var j =1; j<=que; j++){ //문제번호
+				for(var i =1; i<=queList; i++){//문제항목번호
+					let data3  = {"exmqueNum" : examqueList[j-1],
+						 	   "examNum" : examNum,
+						       "sbjNum" : sbjNum,
+						       "queList" :  $("#queCheck_"+j+"-"+i).val()
+					}; //data3 끝
+					$.ajax({
+				  		url : "/exam/examSel",
+				  		contentType : 'application/json;charset=utf-8',
+				  		dataType : "json",
+				  		type : "post",
+				  		async:false,
+				  		data : JSON.stringify(data3),
+				  		 beforeSend : function(xhr) {   // 데이터 전송 전  헤더에 csrf값 설정
+			                xhr.setRequestHeader("${_csrf.headerName}", "${_csrf.token}");
+						},
+						success : function(result){
+							count++;
+							if(que * queList == count){
+								alert("시험 출제가 완료되었습니다!");
+								//window.location = "/login/home";
+							}
+						}
+					});//ajax끝
+				}//문제항목번호 끝
+			}//문제번호끝
+
+
+		})//submit 끝
+	});
+
+
+
+</script>
+<style>
+.RVEQke {
+	background-color: rgb(103, 58, 183);
+	color: rgba(255, 255, 255, 1);
+}
+</style>
+</head>
+
+<body>
+	<section class="content">
+		<div class="container-fluid" style="text-align: center;">
+			<div style="margin-left: auto; margin-right: auto; border-top-left-radius: 8px; border-top-right-radius: 8px; background: #673ab7; width: 500px;">
+				&nbsp;
+			</div>
+			<div style="margin-left: auto; margin-right: auto; border-bottom-left-radius: 8px; border-bottom-right-radius: 8px; background: white; height: 100px; width: 500px;">
+				<br>
+				<div style="position: relative">
+					<span id="sbjNum" style="display : none;">${subjectVO.sbjNum}</span>
+					<h3>${subjectVO.sbjTitle}시험출제</h3>
+					<span style="margin-left: auto;">${subjectVO.teaNmKor}</span>
+				</div>
+			</div>
+		</div>
+		<br>
+		<br>
+			<div style="margin-left:auto; margin-right:auto; border-radius: 8px; background:white; width:500px; height : 350px;">
+				<br id="brbr1">
+				<!-- 시험문제 -->
+				<input placeholder="질문" id="que_1" style="width:350px; height:40px; border:none; margin-left : 20px; background: #e2e1e3; border-bottom: 1px solid #9b9a9c;" type="text" />
+				<br>
+				<br>
+				<div id="buttonDiv_1" style="margin-left : 20px;">
+					<button type="button" id="optionAdd_1" class="btn btn-light">옵션추가</button>
+					<button type="button" id="optionMinus_1" class="btn btn-light">옵션삭제</button>
+					<button type="button" id="answer_1" class="btn btn-light">정답</button>
+				</div>
+			</div>
+			<br id="examDivPrev">
+			<div id="examDiv" style="text-align : right; margin-left:auto; margin-right:auto; border-radius: 8px; width:500px; ">
+				<button type="button" id="addExam" class="btn btn-light">문제추가</button>
+				<button type="button" id="minusExam" class="btn btn-light">문제삭제</button>
+				<button type="button" id="submit" class="btn btn-light">출제완료</button>
+			</div>
+	</section>
+</body>
+</html>

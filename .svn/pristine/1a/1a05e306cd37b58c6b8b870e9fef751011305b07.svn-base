@@ -1,0 +1,80 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>시험문제 출제하기</title>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<script>
+	$(function() {
+		var number = 1;
+		$("#optionAdd").on("click",function(){
+			
+			if(number<=3){
+				number++;
+				var str = "<div id='div"+number+"'>";
+			    str+= 	  "<input id='check"+number+"' type='radio' style='margin-left : 20px;'/>&nbsp;";
+			    str+=     "<input type='text' id='option"+number+"' placeholder='옵션' style='width:350px; height:40px; border:none; margin-left : 20px;' />";
+			    str+=     "</div>";
+			    
+			 $("#buttonDiv").prev().append(str);	
+			}else{
+				alert("옵션을 더 이상 추가 할 수 없습니다.");
+				return false;
+			}
+		})//#optionAdd 끝
+		$("#optionMinus").on("click",function(){
+			if(number==1){
+				alert("옵션을 더 이상 삭제 할 수 없습니다.");
+				return false;
+			}
+			
+			$("#div"+number).remove();
+			number--;
+		})//#optionMinus 끝
+	})
+</script>
+<style>
+.RVEQke {
+	background-color: rgb(103, 58, 183);
+	color: rgba(255, 255, 255, 1);
+}
+</style>
+</head>
+
+<body>
+	<section class="content">
+		<div class="container-fluid" style="text-align: center;">
+			<div style="margin-left: auto; margin-right: auto; border-top-left-radius: 8px; border-top-right-radius: 8px; background: #673ab7; width: 500px;">
+				&nbsp;
+			</div>
+			<div style="margin-left: auto; margin-right: auto; border-bottom-left-radius: 8px; border-bottom-right-radius: 8px; background: white; height: 100px; width: 500px;">
+				<br>
+				<div style="position: relative">
+					<h3>${subjectVO.sbjTitle}시험출제</h3>
+					<span style="margin-left: auto;">${subjectVO.teaNmKor}</span>
+				</div>
+			</div>
+		</div>
+		<br>
+		<br>
+		
+			<div style="margin-left:auto; margin-right:auto; border-radius: 8px; background:white; width:500px; height : 300px;">
+				<br>
+				<input placeholder="질문" style="width:350px; height:40px; border:none; margin-left : 20px; background: #e2e1e3; border-bottom: 1px solid #9b9a9c;" type="text" />
+				<br>
+				<br>
+					<div id="div1">
+						<input id="check1" type="radio" name="que" style="margin-left : 20px;"/>&nbsp;<input type="text" id="option1" placeholder="옵션" style="width:350px; height:40px; border:none; margin-left : 20px;" />
+					</div>
+					<div id="buttonDiv" style="margin-left : 20px;">
+						<button type="button" id="optionAdd" class="btn btn-light">옵션추가</button>
+						<button type="button" id="optionMinus" class="btn btn-light">옵션삭제</button>
+					</div>
+			</div>
+	</section>
+</body>
+</html>

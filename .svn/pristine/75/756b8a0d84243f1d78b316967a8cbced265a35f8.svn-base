@@ -1,0 +1,52 @@
+package kr.or.ddit.gradeobjection;
+
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+import kr.or.ddit.gradeobjection.service.GradeObjectionService;
+import kr.or.ddit.vo.CourseListVO;
+import kr.or.ddit.vo.UserVO;
+import lombok.extern.slf4j.Slf4j;
+
+
+@Slf4j
+@RequestMapping("/grade")
+@Controller
+public class GradeObjectionController {
+
+	@Autowired
+	GradeObjectionService gradeService;
+	
+	/**
+	 * 성적이의 신청
+	 * 학생 : 수강중인 강의 리스트
+	 * 교수 : 이의신청한 학생 리스트
+	 */
+	@GetMapping("/gradeObjc")
+	public String gradeObjc(HttpServletRequest request,Model model, Map<String, Object> map) {
+		
+		HttpSession session = request.getSession();
+		UserVO userVO = (UserVO) session.getAttribute("userVO");
+		int stuNum = userVO.getUsername();
+		log.info("gradeObjc 에서 넘어온 stuNum값: " + stuNum);
+		
+//		Map<String, Object> getStuInfo = this.gradeService.getStuInfo(stuNum);
+		map.put("stuNum",userVO.getUsername()+"");
+//		map.put("getStuInfo", getStuInfo);
+		
+		List<CourseListVO> gradeObjectionList = this.gradeService.gradeObjectionList(map);
+		model.addAttribute("data", gradeObjectionList);
+		return "grade/gradeObjc";
+	}
+	
+	
+}

@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace : xml파일이 여러개일 수 있으므로
+	이를 구별하기 위한 식별 용도로 사용
+ -->
+<mapper namespace="kr.or.ddit.mapper.ProductMapper">
+	
+	<!-- 
+	파라미터 타입: 
+	리턴 타입: productVO   
+	-->
+	<select id="list" resultType="productVO">
+		SELECT PRODUCT_ID, PNAME, UNIT_PRICE, DESCRIPTION, MANUFACTURER, CATEGORY, UNITS_IN_STOCK, CONDITION, FILENAME, QUANTITY
+		FROM PRODUCT
+		ORDER BY PRODUCT_ID
+	</select>
+	
+	<!-- 상품 등록
+	드루와 : productVO
+	가즈아 : 생략(int)
+	 -->
+	<insert id="createPost" parameterType="productVO">
+		<selectKey resultType="string" order="BEFORE" keyProperty="productId">
+			SELECT SUBSTR(MAX(PRODUCT_ID),1,1)
+			     ||(SUBSTR(MAX(PRODUCT_ID),2)+1)
+			FROM PRODUCT
+		</selectKey>
+		INSERT INTO PRODUCT(PRODUCT_ID, PNAME, UNIT_PRICE, DESCRIPTION, MANUFACTURER
+			, CATEGORY, UNITS_IN_STOCK, CONDITION, FILENAME)
+		VALUES(#{productId},#{pname},#{unitPrice},#{description},#{manufacturer}
+			,#{category},#{unitsInStock},#{condition},#{filename})
+	</insert>
+	
+	<select id="getProductId" resultType="String">
+		SELECT SUBSTR(MAX(PRODUCT_ID),1,1)
+		     ||(SUBSTR(MAX(PRODUCT_ID),2)+1)
+		FROM PRODUCT
+	</select>
+	
+	<select id="getProduct" resultType="productVO" parameterType="productVO">
+		SELECT PRODUCT_ID, PNAME, UNIT_PRICE, DESCRIPTION, MANUFACTURER, CATEGORY, UNITS_IN_STOCK, CONDITION, FILENAME, QUANTITY
+		FROM PRODUCT
+		WHERE PRODUCT_ID=#{productId}
+	</select>
+	
+	<!-- insert / update / delete의 경우 resultType은 생략함 -->
+   <insert id="updatePost" parameterType="productVO">
+      <selectKey resultType="String" order="AFTER" keyProperty="productId" >
+         SELECT NVL(SUBSTR(MAX(PRODUCT_ID),1,1)
+              || (SUBSTR(MAX(PRODUCT_ID),2) + 1),'P0000')
+         FROM   PRODUCT
+      </selectKey>
+   
+      MERGE INTO PRODUCT A
+      USING DUAL
+      ON(A.PRODUCT_ID = #{productId})
+      WHEN MATCHED THEN
+          UPDATE SET PNAME = #{pname}
+                   , UNIT_PRICE = #{unitPrice}
+                   , DESCRIPTION = #{description}
+                   , MANUFACTURER = #{manufacturer}
+                   , CATEGORY = #{category}
+                   , UNITS_IN_STOCK = #{unitsInStock}
+                   , CONDITION = #{condition}
+      WHEN NOT MATCHED THEN
+          INSERT (PRODUCT_ID, PNAME, UNIT_PRICE, DESCRIPTION, MANUFACTURER
+                , CATEGORY, UNITS_IN_STOCK, CONDITION, FILENAME)
+          VALUES(#{productId},#{pname},#{unitPrice},#{description},#{manufacturer}
+              , #{category}, #{unitsInStock}, #{condition},#{filename})
+   </insert>
+   
+	<delete id="deletePost" parameterType="productVO">
+		DELETE FROM PRODUCT 
+		WHERE PRODUCT_ID=#{productId}
+	</delete>
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,17 @@
+package kr.or.ddit.acad.service;
+
+import org.json.simple.JSONArray;
+
+import kr.or.ddit.vo.ACADCalendarVO;
+
+public interface IACADCalendarService {
+
+	public JSONArray acadDataList();
+
+	public int addEvent(ACADCalendarVO acVO);
+
+	public int updateEvent(ACADCalendarVO acVO);
+
+	public int removeEvent(ACADCalendarVO acVO);
+
+}

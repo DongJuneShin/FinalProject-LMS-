@@ -1,0 +1,53 @@
+package kr.or.ddit.service.impl;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import kr.or.ddit.mapper.ProductMapper;
+import kr.or.ddit.service.ProductService;
+import kr.or.ddit.vo.ProductVO;
+import lombok.extern.slf4j.Slf4j;
+
+//스프링이 인식하여 자바빈 객체로 등록해줌
+@Slf4j
+@Service
+public class ProductServiceImple implements ProductService {
+	//DI(의존성 주입)
+	@Autowired
+	ProductMapper productMapper;
+
+	//제품 목록
+	@Override
+	public List<ProductVO> list() {
+		return productMapper.list();
+	}
+
+	//제품 등록
+	@Override
+	public int createPost(ProductVO productVO) {
+		return productMapper.createPost(productVO);
+	}
+
+	@Override
+	public String getProductId() {
+		return productMapper.getProductId();
+	}
+
+	@Override
+	public ProductVO getProduct(ProductVO productVO) {
+		return productMapper.getProduct(productVO);
+	}
+
+	@Override
+	public int updatePost(ProductVO productVO) {
+		return productMapper.updatePost(productVO);
+	}
+
+	@Override
+	public int deletePost(ProductVO productVO) {
+		return productMapper.deletePost(productVO);
+	}
+
+}

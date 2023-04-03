@@ -1,0 +1,25 @@
+package kr.or.ddit.controller;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+@RequestMapping("/ygscholarship")
+@Controller
+public class Yg_scholarshipController {
+	
+	/**
+	 * 장학금 목록
+	 * 학생
+	 */
+	@GetMapping("/list")
+	public void scholarshipList() {}
+	
+	/**
+	 * 장학금 추천
+	 * 교수
+	 */
+	@GetMapping("/recommendation")
+	public void recommendation() {}
+	
+}

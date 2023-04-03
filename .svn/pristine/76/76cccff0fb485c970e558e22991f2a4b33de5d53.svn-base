@@ -1,0 +1,370 @@
+<%@ page language="java" contentType="text/html;charset=UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<script src="/resources/sneat/assets/vendor/libs/jquery/jquery.js"></script>
+<script src="/resources/sneat/assets/vendor/libs/sweetalert2/sweetalert2.js"></script>
+<script type="text/javascript" src="/resources/sneat/assets/js/extended-ui-sweetalert2.js"></script>
+
+<style type="text/css">
+.card{
+	min-height: 100%;
+}
+.categoryBar{
+	color: gray;
+}
+.si_target{
+	width: 60%;
+	text-align: center;
+}
+thead{
+	text-align: center;
+}
+.table > thead {
+	vertical-align: middle;
+}
+th{
+ 	white-space: pre-line;
+ 	text-align: center;
+ }
+tr td {
+  text-align: center;
+}
+.div-header{
+	text-align: right;
+}
+.innerCard{
+	border: 1px solid lightgray;
+	border-radius: 5px;
+	margin: 5px;
+	padding: 10px;
+}
+.search-sel{
+	width: 20%;
+}
+textarea{
+	resize: none;
+	width: 100%;
+	maxlength: 300;
+}
+.infoDiv{
+	margin: 10px;
+}
+</style>
+<script>
+$(function(){
+	$.ajax({
+		url : "/manage/getCollNm",
+		contentType : 'application/json;charset=utf-8',
+		dataType : "json",
+		type : "post",
+		beforeSend : function(xhr) {   // 데이터 전송 전  헤더에 csrf값 설정
+        xhr.setRequestHeader("${_csrf.headerName}", "${_csrf.token}");
+		}, 
+		success : function(result){
+			var str = "";
+				str+="<option value=''>전체</option>";
+			for(var i=0; i<result.data.length; i++){
+				str+="<option value='"+result.data[i].collNm+"'>"+result.data[i].collNm+"</option>";
+			}
+			$("#college").append(str);
+		}
+	});
+	
+	var college = "${map.college}";
+	setTimeout(() => {
+		$("#college").val(college).prop("selected", true);
+	}, 10);
+
+// 	var collegeeeeee = $("#collegeeeeee").val();
+// 	console.log(collegeeeeee);
+// 	$("option[value='공과대학']").attr("selected",true);
+	
+});
+
+
+</script>
+<h5 class="title categoryBar">학과조회</h5>
+
+<input type="hidden" id="collegeeeeee" value="${college}">
+<div class="card">
+
+	<div class="container">
+		<div class="card innerCard">
+			<div class="row g-3">
+				<div class="col-md-9">
+					<form action="/manage/deptManage?college=${param.college}" method="get">
+						<div class="row infoDiv">
+							<label class="col-sm-1 col-form-label text-sm-end" for="college">단과대학</label>
+							<select id="college" name="college" class="col-sm-2 form-select search-sel" aria-label="Default select example"></select>
+							
+							<div class="col-sm-2">
+								<button type="submit" class="btn btn-label-secondary">검색</button>
+							</div>
+						</div>
+					</form>
+				</div>
+				
+				<div class="col-md-3">
+					<div class="row infoDiv">
+						<div class="div-header">
+							<button type="button" class="btn btn-label-info" data-bs-toggle="modal" data-bs-target="#deptInfo">추가</button>
+							<a href="#" id="delete" class="btn btn-label-info">삭제</a>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<div class="container">
+		<table class="table table-bordered">
+			<thead class="table-active">
+				<tr class="text-nowrap">
+					<th></th>
+					<th>단과대명</th>
+					<th>학과명</th>
+					<th>학과정원</th>
+				</tr>
+			</thead>
+			<tbody>
+				<c:forEach var="departmentVO" items="${data.content}" varStatus="stat">
+				<tr>
+					<td><input class="form-check-input" type="checkbox" id="select" name="select" value="${departmentVO.deptNum}"></td>
+					<td id="collNm">${departmentVO.collNm}</td>
+					<td class="deptNm" id="deptNm" data-bs-toggle="modal" data-bs-target="#deptInfo" data-deptnm="${departmentVO.deptNm}">${departmentVO.deptNm}</td>
+					<td id="deptNumber">${departmentVO.deptNumber}</td>
+				</tr> 	
+				</c:forEach>
+			</tbody>
+		</table>
+		
+		<!-- 페이징 -->	
+		<div class="col">
+			<div class="demo-inline-spacing">
+				<!-- Basic Square Pagination -->
+				<nav aria-label="Page navigation">
+					<ul class="pagination pagination-round pagination-primary justify-content-center">
+						<li class="page-item first <c:if test="${data.startPage -1 <= 0}">disabled</c:if>">
+							<a href="/manage/deptManage?college=${param.college}&currentPage=${data.startPage -1}&size=${param.size}" class="page-link"> <i class="tf-icon bx bx-chevrons-left"></i></a>
+						</li>   
+						<c:forEach var="pNO" begin="${data.startPage}" end="${data.endPage}">
+							<li class="page-item <c:if test='${param.currentPage==pNO}'>active</c:if>">
+								<a class="page-link" href="/manage/deptManage?college=${param.college}&currentPage=${pNO}&size=${param.size}">${pNO}</a>
+							</li>
+						</c:forEach>
+						<li class="page-item last <c:if test="${data.endPage ge data.totalPages}">disabled</c:if>">
+							<a class="page-link" href="/manage/deptManage?college=${param.college}&currentPage=${data.endPage +1}&size=${param.size}">
+								<i class="tf-icon bx bx-chevrons-right"></i>
+							</a>
+						</li>
+					</ul>
+				</nav>
+				<!--/ Basic Square Pagination -->
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="modal fade" id="deptInfo" tabindex="-1" style="display: none;" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered1 modal-simple modal-add-new-cc">
+		<div class="modal-content p-3 p-md-5">
+			<div class="modal-body">
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				<form id="gradeForm" name="gradeForm">
+					<div class="row g-3">
+						<div class="col-md-12">
+							<div class="row">
+								<label class="col-sm-3 col-form-label text-sm-end" for="university">단과대학</label>
+								<div class="col-sm-9">
+								<select id="university" name="university" class="col-sm-7 form-select search-sel" aria-label="Default select example">
+								</select>
+								</div>
+							</div>
+						</div>
+						
+						<div class="col-md-12">
+							<div class="row">
+								<label class="col-sm-3 col-form-label text-sm-end" for="deptNm">학과명</label>
+								<div class="col-sm-9">
+									<input type="text" id="deptNm" name="deptNm" class="form-control" value="" />
+								</div>
+							</div>
+						</div>
+						
+						<div class="col-md-12">
+							<div class="row">
+								<label class="col-sm-3 col-form-label text-sm-end" for="prof">학과장</label>
+								<div class="col-sm-9">
+									<input type="text" id="prof" name="prof" class="form-control" value="" />
+								</div>
+							</div>
+						</div>
+						
+						<div class="col-md-12">
+							<div class="row">
+								<label class="col-sm-3 col-form-label text-sm-end" for="deptNumber">정원</label>
+								<div class="col-sm-9">
+									<input type="number" id="deptNumber" name="deptNumber" class="form-control" value="" />
+								</div>
+							</div>
+						</div>
+						
+						<div class="col-md-12">
+							<div class="row">
+								<label class="col-sm-3 col-form-label text-sm-end" for="prof">학과등록금</label>
+								<div class="col-sm-9">
+									<input type="text" id="dpefFees" name="dpefFees" class="form-control" value="" />
+								</div>
+							</div>
+						</div>
+						
+<!-- 						<div class="col-md-12 text-center"> -->
+<!-- 							<button type="button" class="btn btn-primary me-sm-3 me-1">수정</button> -->
+<!-- 							<button type="reset" class="btn btn-label-secondary" data-bs-dismiss="modal" aria-label="Close">닫기</button> -->
+<!-- 						</div> -->
+						
+						<div class="col-md-12 text-center">
+<!-- 							<button type="submit" class="btn btn-primary me-sm-3 me-1" id="create">저장</button> -->
+							<button type="button" class="btn btn-primary me-sm-3 me-1 data-submit" id="create">추가</button>
+							<button type="reset" class="btn btn-label-secondary" data-bs-dismiss="modal" aria-label="Close">취소</button>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script>
+$(function(){
+	var checkNum = [];
+	var checkVal = $('input:checkbox[name=select]:checked').val();
+	let deptNum="";
+	$('input:checkbox[name=select]').on("click",function(){
+		checkNum.push($(this).val());
+		alert(checkNum);
+	});
+	$("#delete").on("click",function(){			//delete 시작
+		if(!checkNum.length>0){
+			Swal.fire({
+				  icon: 'error',
+				  title: '체크박스 설정해주세요',
+				})
+			return false;
+		}
+	
+	var count =0;
+	for(var i =0; i<checkNum.length; i++){				//for문 시작
+		let data ={"deptNum" : checkNum[i]};
+		$.ajax({
+			url:"/manage/deleteNum",
+	         contentType:"application/json; charset:utf-8",
+	         data: JSON.stringify(data),
+	         type: "post",
+	         dataType: "json",
+	         beforeSend : function(xhr) {   // 데이터 전송 전  헤더에 csrf값 설정
+	           	xhr.setRequestHeader("${_csrf.headerName}", "${_csrf.token}");
+	 			},
+	 		 success : function(result){
+	 			 count++;
+	 	       	 if(count == checkNum.length){
+	        		 Swal.fire({
+	        			  position: 'top-center',
+	        			  icon: 'success',
+	        			  title: '삭제되었습니다.',
+	        			  showConfirmButton: false,
+	        			  timer: 1500
+	        		})
+	        			setTimeout(sayHi,1500);
+		        	 }
+				}
+			});//ajax 끝
+		}//for문끝
+	});//delete 끝
+	
+	function sayHi() {
+		location.reload();
+	}
+	
+	
+	//모달에 단과대학 추가하는 ajax 시작
+	$.ajax({
+		url : "/manage/getCollNm",
+		contentType : 'application/json;charset=utf-8',
+		dataType : "json",
+		type : "post",
+		beforeSend : function(xhr) {   // 데이터 전송 전  헤더에 csrf값 설정
+        xhr.setRequestHeader("${_csrf.headerName}", "${_csrf.token}");
+		}, 
+		success : function(result){
+			var str = "";
+				str+="<option value=''>전체</option>";
+			for(var i=0; i<result.data.length; i++){
+				str+="<option value='"+result.data[i].collNm+"'>"+result.data[i].collNm+"</option>";
+			}
+			$("#university").append(str);
+		}
+	}); //모달에 단과대학 추가하는 ajax 끝
+	
+	
+	//학과모달에서 학과 추가 시작
+	$("#create").on("click",function(){
+		var form = $('#gradeForm')[0];
+		var formData = new FormData(form);
+		console.log("formData : " , formData);
+		
+// 		var queryString = decodeURIComponent($("form[name=gradeForm]").serialize()) ;
+
+		$.ajax({
+			url : "/manage/gradeForm",
+			processData : false,
+			contentType:false,
+			data : formData,
+			dataType : "json",
+			type : "post",
+			beforeSend : function(xhr) {   // 데이터 전송 전  헤더에 csrf값 설정
+          	xhr.setRequestHeader("${_csrf.headerName}", "${_csrf.token}");
+			},
+			success : function(result){
+				console.log(result);
+			}
+		});
+	});
+	
+	
+	
+	
+	
+	
+	
+// 	$(".deptNm").on("click",function(){
+// 		deptNm = $(this).data("deptnm");
+// 		alert(deptNm);
+// 		let data = {"deptNm" : deptNm};
+// 		$.ajax({
+// 			url:"/manage/deptNm",
+// 	         contentType:"application/json; charset:utf-8",
+// 	         data: JSON.stringify(data),
+// 	         type: "post",
+// 	         dataType: "json",
+// 			beforeSend : function(xhr) {   // 데이터 전송 전  헤더에 csrf값 설정
+//          	xhr.setRequestHeader("${_csrf.headerName}", "${_csrf.token}");
+// 			},
+// 	         success : function(result){
+// 	        	 console.log("result : " + JSON.stringify(result));
+// 	        	 $("collNm"),val(result.departmentVO.collNm);
+// 	        	 $("deptNm"),val(result.departmentVO.deptNm);
+// 	        	 $("deptNumber"),val(result.departmentVO.deptNumber);
+// 	         }
+			
+// 		})
+		
+// 	});
+	
+});
+
+
+
+
+
+</script>
+

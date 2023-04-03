@@ -1,0 +1,16 @@
+package kr.or.ddit.login.service;
+
+import kr.or.ddit.vo.UserVO;
+
+public interface fLoginService {
+
+	public String getAuth(UserVO userVO);
+
+	public UserVO getStudent(UserVO userVO);
+
+	public UserVO getTeacher(UserVO userVO);
+
+	public UserVO getAdmin(UserVO userVO);
+
+
+}

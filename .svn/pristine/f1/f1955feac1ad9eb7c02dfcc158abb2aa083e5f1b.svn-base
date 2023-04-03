@@ -1,0 +1,84 @@
+package kr.or.ddit.security;
+
+import java.io.IOException;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
+
+import kr.or.ddit.mapper.LoginMapper;
+import kr.or.ddit.vo.AdminVO;
+import kr.or.ddit.vo.StudentVO;
+import kr.or.ddit.vo.TeacherVO;
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
+public class CustomLoginSuccessHandler extends 
+	SavedRequestAwareAuthenticationSuccessHandler {
+	
+	@Autowired
+	LoginMapper loginMapper;
+	
+	@Override
+	public void onAuthenticationSuccess(HttpServletRequest request,
+			HttpServletResponse response, Authentication auth)
+			throws ServletException, IOException {
+		//~했을때.로그인을.성공
+		log.info("onAuthenticationSuccess");
+		
+		User costomUser = (User)auth.getPrincipal();
+		
+		log.info("username : " + costomUser.getUsername());
+		log.info("로그인 성공!");
+		
+		super.onAuthenticationSuccess(request, response, auth);
+		
+		
+		int user = Integer.parseInt(costomUser.getUsername());
+		
+		String authen = loginMapper.getAuth(user);
+		
+		HttpSession session = request.getSession();
+		
+		if(authen.equals("ROLE_STU")) {
+			
+			StudentVO stuVO = new StudentVO();
+			stuVO = loginMapper.getStudent(user);
+			session.setAttribute("user", "student");
+			session.setAttribute("userVO", stuVO);
+			
+		}else if(authen.equals("ROLE_TEA")) {
+			
+			TeacherVO teaVO = new TeacherVO();
+			teaVO = loginMapper.getTeacher(user);
+			session.setAttribute("user", "teacher");
+			session.setAttribute("userVO", teaVO);
+			
+		}else {
+			
+			AdminVO admVO = new AdminVO();
+			admVO = loginMapper.getAdmin(user);
+			session.setAttribute("user", "admin");
+			session.setAttribute("userVO", admVO);
+			
+		}
+		
+	}
+	
+}
+
+
+
+
+
+
+
+
+
+

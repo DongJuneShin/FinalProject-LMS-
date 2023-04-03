@@ -1,0 +1,15 @@
+package kr.or.ddit.mapper;
+
+import java.util.List;
+
+import kr.or.ddit.vo.SubjectVO;
+
+public interface EnrollMapper {
+	
+	/**
+	 * 전체 과목 리스트
+	 * @param subjectVO 교수 교번이 담긴 vo
+	 * @return 과목 리스트
+	 */
+	public List<SubjectVO> getSubjectList(SubjectVO subjectVO);
+}

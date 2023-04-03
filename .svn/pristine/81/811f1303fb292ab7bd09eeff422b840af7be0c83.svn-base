@@ -1,0 +1,26 @@
+package kr.or.ddit.dj.service.impl;
+
+import java.util.Map;
+
+import javax.inject.Inject;
+
+import org.springframework.stereotype.Service;
+
+import kr.or.ddit.dj.mapper.SubjectMapper;
+import kr.or.ddit.dj.service.SubjectService;
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
+@Service
+public class SubjectServiceImpl implements SubjectService {
+
+	@Inject
+	SubjectMapper subjectMapper;
+	
+	@Override
+	public int loginSubject(Map<String, Object> map) {
+//		return subjectMapper.loginSubject(map);
+		return subjectMapper.loginSubject(map);
+	}
+
+}

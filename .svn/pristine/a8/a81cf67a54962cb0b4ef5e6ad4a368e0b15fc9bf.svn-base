@@ -1,0 +1,22 @@
+package kr.or.ddit.vo;
+
+import java.util.List;
+
+import lombok.Data;
+
+@Data
+public class VoteVO {
+	
+	private int voteNum;
+	private int sNum;
+	private String voteTitle;
+	private String voteEnddt;
+	private int voteAdmin;
+	private String period;
+	
+	private String[] voters;
+	private List<VotersVO> votersList;
+	
+	
+
+}

@@ -1,0 +1,21 @@
+package kr.or.ddit.academic.service;
+
+import java.util.Map;
+
+import kr.or.ddit.vo.AcademicVO;
+
+public interface AcademicService {
+
+	//(학생)학적정보 출력
+	public Map<String, Object> getStuInfo(int stuNum);
+	
+	//(학생)휴학 신청
+	public int appLeave(AcademicVO academicVO);
+	
+	//(학생)각 학적변동 신청 건수 조회(처리상태:대기)
+	public int getAcCnt(Map<String, Object> cntMap);
+
+	//(학생)학적상태 조회
+	public int getStuStatus(int stuNum);
+	
+}

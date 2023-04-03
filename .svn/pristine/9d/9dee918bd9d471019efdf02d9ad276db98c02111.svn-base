@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+  <mapper namespace="kr.or.ddit.mapper.DPNoticeBoardMapper">
+  
+  	<select id="getDnNum" resultType="int">
+  		SELECT NVL(MAX(DN_NUM),0) + 1 FROM DEPARTMENT_NOTE
+  	</select>
+  	 
+  </mapper>

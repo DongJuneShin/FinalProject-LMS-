@@ -1,0 +1,16 @@
+package kr.or.ddit.study.general.service;
+
+import java.util.List;
+
+import kr.or.ddit.vo.StudyVO;
+
+public interface StudyGeneralService {
+
+	/**
+	 * 스터디 전체 리스트 가져오기
+	 * @param stuNum : 로그인한 학생 학번
+	 * @return
+	 */
+	public List<StudyVO> getStudyList(int stuNum);
+
+}

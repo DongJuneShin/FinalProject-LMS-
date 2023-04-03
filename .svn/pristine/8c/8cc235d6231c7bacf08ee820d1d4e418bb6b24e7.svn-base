@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+  <mapper namespace="kr.or.ddit.mapper.fLoginMapper">
+  
+  	<select id="getAuth" parameterType="userVO" resultType="string">
+		SELECT A.AUTH
+		FROM AUTHENTICATE A LEFT OUTER JOIN (
+		                                    SELECT USERNAME, PASSWORD FROM USERS
+		                                    WHERE USERNAME = #{username} AND pkg_crypto.decrypt(PASSWORD) = #{password}) B
+		ON(A.USERNAME = B.USERNAME)
+		WHERE B.USERNAME = #{username} 		
+  	</select>
+  	
+  	<select id="getStudent" parameterType="userVO" resultType="userVO">
+		SELECT A.STU_NUM username, A.DEPT_NUM deptNum, A.STU_NM_KOR name, A.STU_PHOTO photo, A.STU_STATUS status,
+		       D.AUTH auth, D.PASSWORD password
+		FROM STUDENT A LEFT OUTER JOIN (       
+							            SELECT B.AUTH AUTH, B.USERNAME USERNAME, pkg_crypto.decrypt(C.PASSWORD) PASSWORD
+							            FROM AUTHENTICATE B LEFT OUTER JOIN USERS C
+							            ON(B.USERNAME = C.USERNAME)
+							            WHERE C.USERNAME = #{username})D
+		ON(A.STU_NUM = D.USERNAME)
+		WHERE A.STU_NUM = #{username}		
+  	</select>
+  	
+  	<select id="getTeacher" parameterType="userVO" resultType="userVO">
+		SELECT A.TEA_NUM username, A.DEPT_NUM deptNum, A.TEA_NM_KOR name, A.TEA_PHOTO photo, A.MAJOR major,
+		       D.AUTH auth, D.PASSWORD password
+		FROM TEACHER A LEFT OUTER JOIN (       
+							            SELECT B.AUTH AUTH, B.USERNAME USERNAME, pkg_crypto.decrypt(C.PASSWORD) PASSWORD
+							            FROM AUTHENTICATE B LEFT OUTER JOIN USERS C
+							            ON(B.USERNAME = C.USERNAME)
+							            WHERE C.USERNAME = #{username})D
+		ON(A.TEA_NUM = D.USERNAME)
+		WHERE A.TEA_NUM = #{username}  	
+  	</select>
+
+  	<select id="getAdmin" parameterType="userVO" resultType="userVO">
+		SELECT A.EMP_NUM username, A.EMP_NM_KOR name, A.EMP_PHOTO photo,
+		       D.AUTH auth, D.PASSWORD password
+		FROM EMPLOYEE A LEFT OUTER JOIN (       
+							            SELECT B.AUTH AUTH, B.USERNAME USERNAME, pkg_crypto.decrypt(C.PASSWORD) PASSWORD
+							            FROM AUTHENTICATE B LEFT OUTER JOIN USERS C
+							            ON(B.USERNAME = C.USERNAME)
+							            WHERE C.USERNAME = #{username})D
+		ON(A.EMP_NUM = D.USERNAME)
+		WHERE A.EMP_NUM = #{username}  	
+  	</select>
+  	
+ 
+  </mapper>

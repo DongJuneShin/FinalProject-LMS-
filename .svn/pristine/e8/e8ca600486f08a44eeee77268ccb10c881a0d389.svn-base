@@ -1,0 +1,26 @@
+package kr.or.ddit.consult.controller;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+@Controller
+@RequestMapping("/consult")
+public class ConsultController {
+
+	@GetMapping("/index/tea")
+	public String indexTea() {
+		return "consult/indexTea";
+	}
+	
+	@GetMapping("/index/stu")
+	public String indexStu() {
+		return "consult/indexStu";
+	}
+	
+	@GetMapping("/webRtc")
+	public String webRtc() {
+		return "consult/webRtc";
+	}
+	
+}

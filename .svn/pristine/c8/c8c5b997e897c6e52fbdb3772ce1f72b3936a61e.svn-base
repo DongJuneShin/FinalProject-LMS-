@@ -1,0 +1,16 @@
+package kr.or.ddit.mapper;
+
+import kr.or.ddit.vo.UserVO;
+
+public interface fLoginMapper {
+
+	public String getAuth(UserVO userVO);
+
+	public UserVO getStudent(UserVO userVO);
+
+	public UserVO getTeacher(UserVO userVO);
+
+	public UserVO getAdmin(UserVO userVO);
+
+
+}

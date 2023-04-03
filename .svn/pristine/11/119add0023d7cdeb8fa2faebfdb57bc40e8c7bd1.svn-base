@@ -1,0 +1,43 @@
+package kr.or.ddit.academic.service.impl;
+
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import kr.or.ddit.academic.service.AcademicService;
+import kr.or.ddit.mapper.AcademicMapper;
+import kr.or.ddit.vo.AcademicVO;
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
+@Service
+public class AcademicServiceImpl implements AcademicService {
+	
+	@Autowired
+	AcademicMapper academicMapper;
+	
+	//학생 학적정보 출력
+	@Override
+	public Map<String, Object> getStuInfo(int stuNum){
+		return academicMapper.getStuInfo(stuNum);
+	}
+	
+	//(학생)휴학 신청
+	@Override
+	public int appLeave(AcademicVO academicVO) {
+		return academicMapper.appLeave(academicVO);
+	}
+	
+	//(학생)각 학적변동 신청 건수 조회(처리상태:대기)
+	@Override
+	public int getAcCnt(Map<String, Object> cntMap) {
+		return academicMapper.getAcCnt(cntMap);
+	}
+	
+	//(학생)학적상태 조회
+	@Override
+	public int getStuStatus(int stuNum) {
+		return academicMapper.getStuStatus(stuNum);
+	}
+}

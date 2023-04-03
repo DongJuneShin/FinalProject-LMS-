@@ -1,0 +1,29 @@
+package kr.or.ddit.enroll.service.impl;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import kr.or.ddit.enroll.service.EnrollService;
+import kr.or.ddit.mapper.EnrollMapper;
+import kr.or.ddit.vo.SubjectVO;
+
+@Service
+public class EnrollSerivceImpl implements EnrollService {
+
+
+	@Autowired
+	EnrollMapper enrollMapper;
+
+	/**
+	 * 전체 과목 리스트
+	 * @param subjectVO 교수 교번이 담긴 vo
+	 * @return 과목 리스트
+	 */
+	@Override
+	public List<SubjectVO> getSubjectList(SubjectVO subjectVO) {
+		return enrollMapper.getSubjectList(subjectVO);
+	}
+
+}

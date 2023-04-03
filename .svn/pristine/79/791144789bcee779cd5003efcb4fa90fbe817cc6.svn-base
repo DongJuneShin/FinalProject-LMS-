@@ -1,0 +1,51 @@
+package kr.or.ddit.dj.controller;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import kr.or.ddit.dj.service.SubjectService;
+import kr.or.ddit.security.LoginController;
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
+@RequestMapping("/subject")
+@Controller
+public class Dj_subjectController {
+	
+	@Inject
+	SubjectService subjectService;
+	
+	private static final Logger logger = LoggerFactory.getLogger(LoginController.class);
+	
+	@GetMapping("/login")
+	public String login() {
+		
+		return "subject/login";
+	}
+	
+	//@RequestMapping(value = "/loginProcess.do", method = RequestMethod.POST)
+	@PostMapping("/loginProcess.do")
+	public String loginProcess(@RequestParam String id,@RequestParam String pw ,HttpServletRequest request, Model model) {
+		log.info("id값 : "+id);
+		log.info("pw값 : "+pw);
+		
+		Map<String, Object> map = new HashMap<>();
+		map.put("id", id);
+		map.put("pw", pw);
+		
+		int count = subjectService.loginSubject(map);
+		return null;
+	}
+}

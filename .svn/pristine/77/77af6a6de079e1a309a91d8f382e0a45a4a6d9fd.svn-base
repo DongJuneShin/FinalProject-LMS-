@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace : xml파일이 여러개일 수 있으므로
+	이를 구별하기 위한 식별 용도로 사용
+ -->
+<mapper namespace="kr.or.ddit.mapper.GraduationMapper">
+	<!-- 전체학기 전공 이수학점 조회 -->
+	<select id="getSumMRecode" parameterType="hashMap" resultType="int">
+		SELECT NVL(SUM(B.SBJ_RECODE),0) AS SUM_MS_RECODE
+		FROM COURSE_LIST A
+		LEFT OUTER JOIN SUBJECT B
+		ON(B.SBJ_NUM = A.SBJ_NUM)
+		WHERE A.STU_NUM = #{stuNum}
+		AND A.CL_FSCORE > 0
+		AND B.DEPT_NUM IS NOT NULL
+		AND B.SBJ_RS = #{sbjRs}
+	</select>
+	
+	<!-- 금학기 전공 이수학점 조회 -->
+	<select id="getThisSumMRecode" parameterType="hashMap" resultType="int">
+		SELECT NVL(SUM(B.SBJ_RECODE),0) AS SUM_MS_RECODE
+		FROM COURSE_LIST A
+		LEFT OUTER JOIN SUBJECT B
+		ON(B.SBJ_NUM = A.SBJ_NUM)
+		WHERE A.STU_NUM = #{stuNum}
+		AND A.CL_FSCORE > 0
+		AND B.DEPT_NUM IS NOT NULL
+		AND B.SBJ_RS = #{sbjRs}
+		AND A.CL_SEMESTER = '20203-01'
+	</select>
+	
+	<!-- 교양 이수학점 조회 -->
+	<select id="getSumERecode" parameterType="hashMap" resultType="int">
+		SELECT NVL(SUM(B.SBJ_RECODE),0) AS SUM_ER_RECODE
+        FROM COURSE_LIST A
+        LEFT OUTER JOIN SUBJECT B
+        ON(B.SBJ_NUM = A.SBJ_NUM)
+        WHERE STU_NUM = #{stuNum}
+        AND A.CL_FSCORE > 0
+        AND B.DEPT_NUM IS NULL
+        AND B.SBJ_RS = #{sbjRs}
+	</select>
+	
+	<!-- 금학기 교양 이수학점 조회 -->
+	<select id="getThisSumERecode" parameterType="hashMap" resultType="int">
+		SELECT NVL(SUM(B.SBJ_RECODE),0) AS SUM_ER_RECODE
+        FROM COURSE_LIST A
+        LEFT OUTER JOIN SUBJECT B
+        ON(B.SBJ_NUM = A.SBJ_NUM)
+        WHERE STU_NUM = #{stuNum}
+        AND A.CL_FSCORE > 0
+        AND B.DEPT_NUM IS NULL
+        AND B.SBJ_RS = #{sbjRs}
+        AND A.CL_SEMESTER = '20203-01'
+	</select>
+</mapper>
+
+
+
+
+
+
+
+
+

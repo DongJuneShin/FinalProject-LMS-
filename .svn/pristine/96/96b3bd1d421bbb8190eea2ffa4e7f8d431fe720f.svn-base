@@ -1,0 +1,20 @@
+package kr.or.ddit.employee.service;
+
+import java.util.List;
+import java.util.Map;
+
+import kr.or.ddit.vo.AdminVO;
+
+public interface EmployeeService {
+	// (관리자) 리스트 조회
+	public List<AdminVO> admList();
+
+	// (관리자) 1명 상세조회
+	public AdminVO empNum(Map<String, Object> map);
+
+	// (관리자) 삭제
+	public int deleteNum(Map<String, Object> map);
+
+	// (관리자) 모달창 수정
+	public int updatePost(Map<String, Object> map);
+}

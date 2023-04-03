@@ -1,0 +1,133 @@
+/**
+ * 
+ */
+// 	var webSocket = new WebSocket("ws://192.168.145.10/WebSocketEx/socket");
+
+$(function() {
+	// 소켓 초기화
+	webSocket = new SockJS("/socket");
+	
+	// 웹소켓 연결
+	webSocket.onopen = function onOpen(event) {
+		webSocket.send(createMessage("connect", userId));
+	}
+
+	// 메시지가 오면
+	webSocket.onmessage = function onMessage(message) {
+		var jsonData = JSON.parse(message.data);
+		
+		var chatNum = jsonData.chatNum;
+		var name = jsonData.name;
+		var message = jsonData.message;
+		var isConn = jsonData.isConn;
+		var readCount = (jsonData.readCount == 0)? '' : jsonData.readCount;
+		
+		// 메시지 추가
+		if(name == "countMsg"){
+			if(message != '0'){
+				$("#countMsg").text(message);
+			}
+			return;
+		}
+		
+		if(isConn == "refresh"){
+			var chatArr = [];
+			if(name == userId){
+				chatArr = $(".my-chat-box");
+				
+			}else{
+				chatArr = $(".chat-box");
+			}
+			$.each(chatArr, function(i, v) {
+				if($(v).find('.chatNum').val() == chatNum){
+					$(v).find(".readCount").text(readCount);
+				}
+			});
+			return;
+		}
+		
+		var chat = "";
+		if(name == userId){
+			chat = "<div class='my-chat-box'>"
+			chat += "<span class='chat readCount'>" + readCount + "</span>";
+			chat += "<span class='chat my-chat'>" + message + "</span>";
+		}else{
+			chat = "<div class='chat-box'><div class='name'>" + name + "</div>";
+			chat += "<span class='chat'>" + message + "</span>";
+// 			if(readCount != ''){
+			chat += "<span class='chat readCount'>" + readCount + "</span>";
+// 			}
+			
+			if(isConn == 'false'){
+				var status = $("#main-container").css("display");
+				if(status != "none"){
+					$("#countMsg").text('');
+				}else{	// 꺼진 상태라면 알림 +1
+					var count = $("#countMsg").text();
+					if(count == "") count = 0;
+					count = parseInt(count) + 1;
+					$("#countMsg").text(count);
+				}
+			}
+		}
+		chat += "<input type='hidden' class='chatNum' value=" + chatNum + " /></div>";
+		console.log(chat);
+		$("#chat-container").append(chat);
+		$('#chat-container').scrollTop($('#chat-container')[0].scrollHeight+100);
+	}
+
+	webSocket.onerror = function onError(event) {
+		alert("오류 : " + event.data);
+	}
+	
+	// 채팅창 켜기
+	$("#openChat").on("click", function() {
+		$("#openChat").css("display", "none");
+		$("#main-container").css("display", "block");
+		$("#countMsg").text("");
+		webSocket.send(createMessage("open", userId));
+		$('#chat-container').scrollTop($('#chat-container')[0].scrollHeight+100);
+	});
+	
+	// 채팅창 끄기
+	$("#closeChat").on("click", function() {
+		$("#openChat").css("display", "block");
+		$("#main-container").css("display", "none");
+		webSocket.send(createMessage("close", userId));
+	});
+	
+	// 엔터키 입력 시 채팅 전송
+	$('#messageText').keydown(function(key){
+		if(key.keyCode == 13){
+			$('#messageText').focus();
+			sendMessage();
+		}
+	});
+
+});
+$("#main-container").draggable({handle: "#chatTopBar"});
+
+// 메시지 전송버튼 클릭 시
+function sendMessage() {
+	if($("#messageText").val().trim()==""){
+		$("#messageText").focus();
+		return;
+	}
+	
+	webSocket.send(createMessage("message", $("#messageText").val()));
+	$("#messageText").val("");
+	
+}
+
+// 보낼 메시지 json방식으로 만듦
+function createMessage(command, message) {
+	return '{"command" : "' + command + '", "message" : "' + message + '"}';
+}
+
+function closing(){
+	webSocket.close();
+}
+
+window.onbeforeunload = function(){
+	closing();
+}

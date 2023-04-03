@@ -1,0 +1,22 @@
+package kr.or.ddit.study.timetable.controller;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+import kr.or.ddit.vo.StudyVO;
+
+@Controller
+@RequestMapping("/study")
+public class StudyTimetableController {
+
+	@GetMapping("/timeTableMain")
+	public String timeTableMain(HttpServletRequest request) {
+		HttpSession session = request.getSession();
+		StudyVO studyVO = (StudyVO) session.getAttribute("studyVO");
+		return "study/timeTableMain";
+	}
+}

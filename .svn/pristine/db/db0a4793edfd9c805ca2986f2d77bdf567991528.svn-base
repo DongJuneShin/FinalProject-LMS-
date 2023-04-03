@@ -1,0 +1,36 @@
+package kr.or.ddit.mapper;
+
+import kr.or.ddit.vo.SubjectVO;
+
+public interface ExamMapper {
+
+	/**
+	 * 교수가 시험을 내기 전에 미리 시험문제를 냈는지 안냈는지 체크
+	 * 미리 냈으면 count가 1 이상 없으면 0
+	 * @param string
+	 * @return
+	 */
+	public int examCheck(String string);
+
+	/**
+	 * 시험을 등록한다는 EXAM 테이블에 등록을함
+	 * @param sbjNum
+	 * @return
+	 */
+	public int examMake(String sbjNum);
+
+	/**
+	 * 과목에 대한 상세정보 가져오기
+	 * @param sbjNum
+	 * @return
+	 */
+	public SubjectVO subjectDetail(String sbjNum);
+
+	/***
+	 * 시험과목의 exam테이블에서 등록된 시험 번호를 가져옴
+	 * @param sbjNum
+	 * @return
+	 */
+	public int getExamNum(String sbjNum);
+
+}

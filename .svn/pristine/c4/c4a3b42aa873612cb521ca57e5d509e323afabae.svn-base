@@ -1,0 +1,119 @@
+<%@page import="kr.or.ddit.vo.UserVO"%>
+<%@ page language="java" contentType="text/html;charset=UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<style type="text/css">
+.categoryBar{
+	color: gray;
+}
+.si_target{
+	width: 60%;
+	text-align: center;
+}
+thead{
+	text-align: center;
+}
+.table-bordered{
+	text-align: center;
+}
+</style>
+
+
+<% 
+	UserVO userVO = (UserVO) session.getAttribute("userVO"); 
+	
+	if(userVO.getAuth().equals("ROLE_STU")){
+%>
+<nav class="navbar navbar-expand-lg bg-white" id="nav_stu">
+	<div class="container-fluid">
+		<div class="collapse navbar-collapse" id="navbar-ex-6">
+			<div class="navbar-nav me-auto">
+				<a class="nav-item nav-link active" href="/course/detail?sbjNum=${sbjNum}&&sbjTitle=${sbjTitle}">주차</a>
+				<a class="nav-item nav-link" href="/course/notice?sbjNum=${sbjNum}&&sbjTitle=${sbjTitle}">공지</a>
+				<a class="nav-item nav-link" href="/course/attendStu?sbjNum=${courseVO.sbjNum}&&sbjTitle=${sbjTitle}">출석</a>
+				<a class="nav-item nav-link" href="/course/assignment?sbjNum=${courseVO.sbjNum}&&sbjTitle=${sbjTitle}">과제</a>
+				<a class="nav-item nav-link" href="/course/reference?sbjNum=${courseVO.sbjNum}&&sbjTitle=${sbjTitle}">자료</a>
+				<a class="nav-item nav-link" href="/course/exam?sbjNum=${sbjNum}&&sbjTitle=${sbjTitle}">시험</a>
+			</div>
+		</div>
+	</div>
+</nav>
+<%
+	}else{
+%>
+<nav class="navbar navbar-expand-lg bg-white" id="nav_pro">
+	<div class="container-fluid">
+		<div class="collapse navbar-collapse" id="navbar-ex-6">
+			<div class="navbar-nav me-auto">
+				<a class="nav-item nav-link active" href="/course/studentList">학생목록</a>
+				<a class="nav-item nav-link" href="/course/notice?sbjNum=${courseVO.sbjNum}&&sbjTitle=${sbjTitle}">공지</a>
+				<a class="nav-item nav-link" href="javascript:void(0)">출석</a>
+				<a class="nav-item nav-link" href="/course/assignment?sbjNum=${courseVO.sbjNum}&&sbjTitle=${sbjTitle}">과제</a>
+				<a class="nav-item nav-link" href="/course/reference?sbjNum=${courseVO.sbjNum}&&sbjTitle=${sbjTitle}">자료</a>
+				<a class="nav-item nav-link" href="javascript:void(0)">성적</a>
+				<a class="nav-item nav-link" href="/course/exam?sbjNum=${sbjNum}&&sbjTitle=${sbjTitle}">시험</a>
+			</div>
+		</div>
+	</div>
+</nav>
+<%
+	}
+%>
+<br />
+
+<h5 class="title">
+	<a href="/home" class="categoryBar">메인</a>&nbsp;/&nbsp;<a href="/course/list" class="categoryBar">강의목록</a>
+	&nbsp;/&nbsp;<a href="/course/detail?sbjNum=${sbjNum}&&sbjTitle=${sbjTitle}" class="categoryBar">${sbjTitle}</a>
+</h5>
+
+<div class="card">
+	<table class="table table-bordered">
+		<thead class="table-active">
+			<tr class="text-nowrap">
+				<th>주차</th>
+				<th class="si_target">학습목표</th>
+				<th>수업 구분</th>
+				<th>과제 여부</th>
+				<th>링크</th>
+			</tr>
+		</thead>
+		<tbody>
+		<c:forEach var="courseDetailVO" items="${data}" varStatus="stat">
+			<tr>
+				<th scope="row">${courseDetailVO.siNum}</th>
+				<td>${courseDetailVO.siTarget}</td>
+				
+				
+				<c:if test="${courseDetailVO.spOnlineyn == null }"><!-- 비대면 수업 -->
+					<td>대면 </td>
+				</c:if>
+				<c:if test="${courseDetailVO.spOnlineyn =! null }"><!-- 비대면 수업 -->
+					<td><a href="#">온라인 </a></td>
+				</c:if>
+				
+				
+				
+				<c:if test="${courseDetailVO.siHwyn == 1 }"><!-- 과제가 있는 주차일 경우 -->
+					<td>O</td>
+					<td><a href="/course/assignment?sbjNum=${courseVO.sbjNum}&&sbjTitle=${sbjTitle}"><button class="btn">제출하러 가기</button></a></td>
+				</c:if>
+				<c:if test="${courseDetailVO.siHwyn == 0 }"><!-- 과제가 없는 주차일 경우 -->
+					<td>X</td>
+					<td></td>
+				</c:if>
+				
+				
+			</tr>
+		</c:forEach>
+		</tbody>
+	</table>
+</div>
+
+<script type="text/javascript">
+$(function(){
+	$("#btnClick").on("click", function(){
+	console.log("두유");
+		$("#nav_pro").css("display","block");
+		$("#nav_stu").css("display", "none");
+	});
+});
+</script>

@@ -1,0 +1,80 @@
+package kr.or.ddit.study.general.service.impl;
+
+import java.util.List;
+import java.util.Map;
+
+import org.apache.maven.doxia.logging.Log;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import kr.or.ddit.mapper.StudyGeneralMapper;
+import kr.or.ddit.study.general.service.StudyGeneralService;
+import kr.or.ddit.vo.StudyReportVO;
+import kr.or.ddit.vo.StudyVO;
+
+@Service
+public class StudyGeneralServiceImpl implements StudyGeneralService {
+
+	@Autowired
+	StudyGeneralMapper sgMapper;
+	
+	/**
+	 * 스터디 전체 리스트 가져오기
+	 * @param studyVO : 로그인한 학생 학번이 담긴 VO
+	 * @return
+	 */
+	@Override
+	public List<StudyVO> getStudyList(StudyVO studyVO) {
+		return sgMapper.getStudyList(studyVO);
+	}
+
+	/**
+	 * 스터디 신청 취소, 초대 수락, 거절
+	 * @param studyVO : 선택한 스터디 번호, sGrade( -1 : 거절/취소, 0 : 수락), 대상 학번
+	 */
+	@Override
+	public int modiStudyGrade(StudyVO studyVO) {
+		if(studyVO.getsGrade() < 0) {
+			return sgMapper.deleteStudy(studyVO);
+		}else if(studyVO.getsGrade() == 0) {
+			return sgMapper.updateStudy(studyVO);
+		}
+		return sgMapper.insertStudy(studyVO);
+	}
+
+	/**
+	 * 입장을 누른 스터디의 정보를 ajax로 세션에 담음
+	 * @param studyVO : 입장한 스터디 번호가 담긴 VO
+	 */
+	@Override
+	public StudyVO getStudy(StudyVO studyVO) {
+		return sgMapper.getStudy(studyVO);
+	}
+
+	/**
+	 * 스터디에 참여, 초대, 신청한 모든 학생들 리스트
+	 * @param studyVO : 스터디 번호가 담긴 VO
+	 */
+	@Override
+	public List<Map<String, Object>> getStudentList(StudyVO studyVO) {
+		return sgMapper.getStudentList(studyVO);
+	}
+
+	@Override
+	public List<Map<String, Object>> inviteList(int sNum) {
+		List<Map<String, Object>> inviteListMap = sgMapper.inviteList(sNum);
+		for(Map<String, Object> map : inviteListMap) {
+			map.put("button", "<button type='button' class='btn btn-primary btn-sm btnInvite'>초대</button>");
+		}
+		
+		
+		return inviteListMap;
+	}
+
+	@Override
+	public void reportStudy(StudyVO studyVO, StudyReportVO srVO) {
+		sgMapper.reportStudy(srVO);
+		sgMapper.deleteStudy(studyVO);
+	}
+
+}

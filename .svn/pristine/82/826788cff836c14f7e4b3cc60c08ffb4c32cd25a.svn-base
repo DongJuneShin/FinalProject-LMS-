@@ -1,0 +1,19 @@
+package kr.or.ddit.certificate.service.impl;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import kr.or.ddit.certificate.service.CertificateService;
+import kr.or.ddit.mapper.CertificateMapper;
+
+@Service
+public class CertificateServiceImpl implements CertificateService {
+
+	@Autowired
+	CertificateMapper certificateMapper;
+
+	@Override
+	public int getPrice(String ctSnum) {
+		return certificateMapper.getPrice(ctSnum);
+	}
+}

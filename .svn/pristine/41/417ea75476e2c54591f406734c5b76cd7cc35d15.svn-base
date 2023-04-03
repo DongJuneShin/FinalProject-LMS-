@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.or.ddit.mapper.EnrollMapper">
+
+	<select id="getSubjectList" parameterType="subjectVO" resultType="subjectVO">
+		SELECT SBJ_NUM, DEPT_NUM, TEA_NUM, SBJ_TITLE, SBJ_GRADE, SBJ_RECODE, SBJ_PERSONNEL, 
+				SBJ_YN, SBJ_COMRE, SBJ_OC, SBJ_RS
+		FROM SUBJECT
+		WHERE TEA_NUM = #{teaNum}
+	</select>
+	
+	<select id="makeSbjNum" parameterType="int" resultType="string">
+		SELECT NVL(SUBSTR(A.SBJ_NUM, 1,3) || LPAD(SUBSTR(A.SBJ_NUM, 4) + 1, 5, 0), 
+		        SUBSTR(B.TEA_NM_ENG, LENGTH(B.TEA_NM_ENG) -2) || '01001')
+		FROM (SELECT MAX(SBJ_NUM) SBJ_NUM FROM SUBJECT WHERE TEA_NUM = #{teaNum}) A,
+		     (SELECT TEA_NM_ENG FROM TEACHER WHERE TEA_NUM = #{teaNum}) B
+	</select>
+	
+	<insert id="insertSubject" parameterType="HashMap">
+		INSERT INTO SUBJECT(SBJ_NUM, DEPT_NUM, TEA_NUM, SBJ_TITLE, SBJ_GRADE, SBJ_RECODE, SBJ_PERSONNEL, SBJ_RS)
+		VALUES(#{sbjNum}, #{deptNum}, #{teaNum}, #{sbjTitle}, #{sbjGrade}, #{sbjRecode}, #{sbjPersonnel}, #{sbjRs})
+	</insert>
+
+	<insert id="insertSubjectPlan" parameterType="HashMap">
+		<selectKey resultType="string" order="BEFORE" keyProperty="spNum">
+			SELECT TO_CHAR(SEQ_SUBJECT_PLAN.NEXTVAL) FROM DUAL
+		</selectKey>
+		
+		INSERT INTO SUBJECT_PLAN(SP_NUM, SBJ_NUM, SP_MIDDLERATIO, SP_FINALRATIO, SP_HWRATIO, 
+								SP_ATTRATIO, SP_ETCRATIO, SP_ONLINEYN, SP_TEXTBOOK)
+		VALUES(#{spNum}, #{sbjNum}, #{spMiddleratio}, #{spFinalratio}, #{spHwratio}, 
+				#{spAttratio}, #{spEtcratio}, #{sbjYn}, #{spTextbook})
+	</insert>
+	
+	<update id="insertSubjectIndex" parameterType="java.util.List">
+		<foreach collection="list" item="siVO" 
+			open="INSERT ALL" close="SELECT * FROM DUAL" separator=" " index="idx">
+		    INTO SUBJECT_INDEX(SI_NUM, SP_NUM, SBJ_NUM, SI_TARGET)
+			VALUES(#{siVO.siNum}, #{siVO.spNum}, #{siVO.sbjNum}, #{siVO.siTarget})
+		</foreach>
+	</update>
+</mapper>

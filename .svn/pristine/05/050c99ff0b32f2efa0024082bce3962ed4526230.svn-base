@@ -1,0 +1,16 @@
+package kr.or.ddit.vo;
+
+import java.util.List;
+
+import lombok.Data;
+
+@Data
+public class CourseAttendanceVO { 
+	private String stuNmKor;
+	private int stuNum;
+	private String deptNm;
+	private int attend;
+	private int late;
+	private int absent;
+	private List<CourseAtListVO> atList;
+}

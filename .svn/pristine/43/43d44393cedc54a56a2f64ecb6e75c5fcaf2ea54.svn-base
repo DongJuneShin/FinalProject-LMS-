@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace : xml파일이 여러개일 수 있으므로
+	이를 구별하기 위한 식별 용도로 사용
+ -->
+<mapper namespace="kr.or.ddit.mapper.AcademicMapper">
+	<!-- 학생 학적정보 출력 -->
+	<select id="getStuInfo" parameterType="int" resultType="hashMap">
+		SELECT C.STU_NUM, C.STU_NM_KOR, C.STU_STATUS, D.DEPT_NM, C.STU_SEMESTER, NVL(C.STU_DMAJOR,0) AS STU_DMAJOR
+		     , NVL(STU_MINOR,0) AS STU_MINOR
+		     , (
+		        SELECT NVL(SUM(A.SBJ_RECODE),0) AS SUM_MAJOR
+		        FROM SUBJECT A
+		        LEFT OUTER JOIN COURSE_LIST B
+		        ON(B.SBJ_NUM = A.SBJ_NUM)
+		        WHERE DEPT_NUM IS NOT NULL
+		        AND B.STU_NUM = #{stuNum}
+		        )AS MAJOR_RECODE
+		     , (
+		         SELECT NVL(SUM(A.SBJ_RECODE),0) AS SUM_ELECTIVE
+		        FROM SUBJECT A
+		        LEFT OUTER JOIN COURSE_LIST B
+		        ON(B.SBJ_NUM = A.SBJ_NUM)
+		        WHERE DEPT_NUM IS NULL
+		        AND B.STU_NUM = #{stuNum}
+		        ) AS ELECTIVE_RECODE
+		FROM STUDENT C
+		INNER JOIN DEPARTMENT D
+		ON(D.DEPT_NUM = C.DEPT_NUM)
+		WHERE STU_NUM = #{stuNum}
+	</select>
+	
+	<!-- (학생)각 학적변동 신청 건수 조회(처리상태:대기) -->
+	<select id="getAcCnt" parameterType="hashMap" resultType="int">
+		SELECT COUNT(*) AS CNT
+		FROM ACADEMIC_CHG
+		WHERE STU_NUM = #{stuNum}
+		AND AC_LIST = #{acList}
+		AND AC_CHECK = 0
+	</select>
+	
+	<!-- (학생)학적상태 조회 -->
+	<select id="getStuStatus" parameterType="int" resultType="int">
+		SELECT NVL(STU_STATUS, 0) AS STU_STATUS
+		FROM STUDENT
+		WHERE STU_NUM = #{stuNum}	
+	</select>
+	
+	<!-- 휴학 신청 -->
+	<insert id="appLeave" parameterType="academicVO">
+		INSERT INTO ACADEMIC_CHG(
+                          AC_NUM, STU_NUM, AC_REASON, AC_LIST, AC_SDT
+                        , AC_EDT, AC_CHECK, AC_COMRE)
+		VALUES(SEQ_ACADEMIC_CHANGE.NEXTVAL, #{stuNum}, #{acReason}, 1, #{acSdt}
+		     , #{acEdt}, 0, NULL)
+	</insert>
+	
+	<!-- (학생)학생별 학적변동 신청 내역 조회 -->
+<!-- 	<select id=""> -->
+		
+<!-- 	</select> -->
+</mapper>
+
+
+
+
+
+
+
+
+

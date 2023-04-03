@@ -1,0 +1,31 @@
+package kr.or.ddit.enroll.service;
+
+import java.util.List;
+import java.util.Map;
+
+import kr.or.ddit.vo.SubjectVO;
+
+public interface EnrollService {
+
+	/**
+	 * 전체 과목 리스트
+	 * @param subjectVO 교수 교번이 담긴 vo
+	 * @return 과목 리스트
+	 */
+	public List<SubjectVO> getSubjectList(SubjectVO subjectVO);
+
+	/**
+	 * 강의 insert를 위해 과목번호 만들어오기
+	 * @param teaNum 강의를 신청한 담당 교수 교번
+	 * @return 과목번호
+	 */
+	public String makeSbjNum(int teaNum);
+	
+	/**
+	 * 강의개설 insert
+	 * @param param : Subject, Subject_Plan, Subject_Index 테이블에 insert할 데이터
+	 */
+	public void insertSubject(Map<String, Object> param);
+
+	
+}

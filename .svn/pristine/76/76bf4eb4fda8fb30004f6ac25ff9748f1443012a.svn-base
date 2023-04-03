@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- namespace : xml파일이 여러개일 수 있으므로 이를 구별하기 위한 용도로 사용 -->
+ <mapper namespace="kr.or.ddit.mapper.ExamMapper">
+  
+  <!-- 시험문제를 이전에 미리 작성했는지 안했는지 확인 -->
+  <select id="examCheck" parameterType="string" resultType="int">
+  select count(*)
+	from exam
+	where sbj_num=#{sbjNum}
+  </select>
+  
+  <insert id="examMake" parameterType="string">
+  insert into exam
+	(EXM_NUM, SBJ_NUM, EXM_DT)
+	values
+	(SEQ_EXAM.nextval, #{sbjNum},TO_DATE(sysdate,'YYYY-MM-DD HH-MI-SS'))
+  </insert>
+  
+  <select id="subjectDetail" parameterType="string" resultType="subjectVO">
+	 select a.SBJ_NUM, a.DEPT_NUM, a.TEA_NUM, a.SBJ_TITLE, a.SBJ_GRADE, 
+	       a.SBJ_RECODE, a.SBJ_PERSONNEL, a.SBJ_YN, a.SBJ_COMRE, a.SBJ_OC, a.SBJ_RS, a.CURRENT_DATA,
+	       b.TEA_NM_KOR
+		from subject a, teacher b
+		where 
+		a.tea_num = b.tea_num
+		and
+		a.sbj_num = #{sbjNum}
+  </select>
+  
+  <select id="getExamNum" parameterType="string" resultType="int">
+  	select EXM_NUM
+	from exam
+	where sbj_num = #{sbjNum}
+  </select>
+ </mapper>

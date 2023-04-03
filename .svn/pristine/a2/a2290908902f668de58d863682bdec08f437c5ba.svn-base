@@ -1,0 +1,9 @@
+package kr.or.ddit.dj.mapper;
+
+import java.util.Map;
+
+public interface SubjectMapper {
+
+	public int loginSubject(Map<String, Object> map);
+
+}

@@ -1,0 +1,14 @@
+package kr.or.ddit.lecture.service;
+
+import java.util.List;
+import java.util.Map;
+
+import kr.or.ddit.vo.LectureEvaVO;
+
+public interface LectureService {
+	// (학생) 강의평가 조회
+	public List<LectureEvaVO> stuLectureList(Map<String, Object> map);
+
+	// (학생) 강의평가 조회
+	public List<LectureEvaVO> lectureList();
+}

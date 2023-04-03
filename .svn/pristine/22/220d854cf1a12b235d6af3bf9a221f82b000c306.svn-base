@@ -1,0 +1,31 @@
+package kr.or.ddit.gradeobjection.impl;
+
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import kr.or.ddit.gradeobjection.service.GradeObjectionService;
+import kr.or.ddit.mapper.GradeObjectionMapper;
+import kr.or.ddit.vo.CourseListVO;
+
+@Service
+public class GradeObjectionServiceImpl implements GradeObjectionService {
+
+	@Autowired
+	GradeObjectionMapper gradeObjectionMapper;
+	
+	// (학생) 수강내역 리스트
+	@Override
+	public List<CourseListVO> gradeObjectionList(Map<String, Object> map) {
+		return gradeObjectionMapper.gradeObjectionList(map);
+	}
+	// (학생) 학생정보 
+	@Override
+	public Map<String, Object> getStuInfo(int stuNum) {
+		return gradeObjectionMapper.getStuInfo(stuNum);
+	}
+	
+}
+

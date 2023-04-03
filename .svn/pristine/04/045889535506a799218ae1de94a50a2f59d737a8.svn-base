@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+  <mapper namespace="kr.or.ddit.mapper.GraphMapper">
+
+<!-- colleageVO -->
+	<select id="colleageList" resultType="colleageVO">
+		select coll_nm
+		from colleage
+		where coll_num !=0
+		order by COLL_NUM asc
+	</select>
+
+	<select id="sumPeopleList" resultType="colleageVO">
+		select a.COLL_NUM ,a.coll_nm ,b.dept_num ,b.dept_nm , c.stu_nm_kor ,count(b.dept_num) count
+		from colleage a , department b , student c
+		where a.coll_num = b.coll_num
+		and
+		b.dept_num = c.dept_num
+		and
+		a.coll_num !=0
+		and
+		a.coll_num is not null
+		group by rollup(a.COLL_NUM ,(a.coll_nm ,b.dept_num ,b.dept_nm , c.stu_nm_kor) )
+		having a.coll_nm is null and a.coll_num is not null
+		order by a.COLL_NUM asc
+	</select>
+
+	<select id="departSumPeople" resultType="colleageVO">
+		select a.DEPT_NUM, a.DEPT_NM , count(a.dept_nm) count
+		from department a , student b
+		where a.DEPT_NUM !=0
+		and
+		a.dept_num = b.dept_num
+		group by a.DEPT_NUM,a.DEPT_NM
+		order by a.DEPT_NUM asc
+	</select>
+  </mapper>

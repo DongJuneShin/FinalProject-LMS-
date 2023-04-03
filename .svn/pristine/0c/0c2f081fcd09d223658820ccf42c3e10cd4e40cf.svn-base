@@ -1,0 +1,11 @@
+package kr.or.ddit.vo;
+
+import lombok.Data;
+
+@Data
+public class CourseAtListVO {
+	private int stuNum;
+	private String timeTcode;
+	private int atWeek;
+	private double atCheck;
+}

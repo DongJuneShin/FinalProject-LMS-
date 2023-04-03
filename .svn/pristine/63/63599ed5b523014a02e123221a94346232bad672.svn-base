@@ -1,0 +1,173 @@
+package kr.or.ddit.scholaship;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
+import org.apache.ibatis.annotations.Param;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import kr.or.ddit.scholaship.service.ScholarshipService;
+import kr.or.ddit.vo.CourseVO;
+import kr.or.ddit.vo.ScholarshipVO;
+import kr.or.ddit.vo.UserVO;
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
+@RequestMapping("/scholarship")
+@Controller
+public class ScholarshipController {
+	@Autowired
+	ScholarshipService scholarShipService;
+	
+	/**
+	 * 장학금 목록
+	 * 학생
+	 */
+	@GetMapping("/list")
+	public String scholarshipList(@RequestParam Map<String, String> map
+			,HttpServletRequest request
+			,Model model
+			) {
+		
+		HttpSession session = request.getSession();
+		UserVO userVO = (UserVO) session.getAttribute("userVO");
+		
+		map.put("stuNum", userVO.getUsername()+"");
+		
+		log.info("==========================");
+		log.info("map : " + map);
+		log.info("==========================");
+		
+		List<ScholarshipVO> scholarshipList = this.scholarShipService.stuScholarshipList(map);
+		model.addAttribute("scholarshipList", scholarshipList);
+		
+		return "scholarship/list";
+	}
+	
+	
+	
+	
+	/**
+	 * 장학금 추천
+	 * 교수
+	 */
+	@GetMapping("/recommendation")
+	public void recommendation() {}
+	
+	/**
+	 * 장학금 추천 승인
+	 * 관리자
+	 */
+	@GetMapping("/recommendation_admin")
+	public String recommendation_admin(Model model) {
+		List<ScholarshipVO> scholarshipList = this.scholarShipService.admScholarshipList();
+		List<ScholarshipVO> paymentsList = this.scholarShipService.paymentsList();
+		
+		log.info("scholarshipList 여기에 sreNum이 있어야함: " + scholarshipList);
+		model.addAttribute("scholarshipList", scholarshipList);
+		model.addAttribute("paymentsList", paymentsList);
+		
+		return "scholarship/recommendation_admin";
+		
+	}
+	
+	/**
+	 * 모달창 상세보기
+	 * 관리자
+	 */
+	@ResponseBody
+	@PostMapping("/showStuNum")
+	public Map<String,Object> showStuNum(@RequestBody Map<String,Object> map) {
+		
+		log.info("showStuNum에서 map의 값 : "+map);
+		
+		ScholarshipVO ScholarshipListVO = this.scholarShipService.showNum(map);
+		ScholarshipVO paymentNum= this.scholarShipService.paymentNum(map);
+		
+		log.info("ScholarshipListVO : " + ScholarshipListVO);
+		log.info("paymentNum : " + paymentNum);
+		
+		Map<String,Object> map2 = new HashMap<>();
+		map2.put("ScholarshipListVO", ScholarshipListVO);
+		map2.put("paymentNum", paymentNum);
+		return map2;
+	}
+	
+	
+	/**
+	 * 장학금 승인
+	 * 관리자
+	 */
+	@GetMapping("/updateState")
+	public String updateState(@RequestParam int stuNum, 
+							  @RequestParam int status,
+							  @RequestParam("slNum") int slNum, 
+							  @RequestParam("sreYsemester") String sreYsemester,
+							  @RequestParam("sreNum") int sreNum) {
+		
+		log.info("/updateState에서 stuNum의 값 : "+stuNum);
+		log.info("/updateState에서 status의 값 : "+status);
+		log.info("/updateState에서 slNum의 값 : "+slNum);
+		log.info("/updateState에서 sreYsemester의 값 : "+sreYsemester);
+		log.info("/updateState에서 sreNum의 값 : "+sreNum);
+		
+		Map<String, Object> map = new HashMap<>();
+		map.put("stuNum", stuNum);
+		map.put("status", status);
+		map.put("slNum", slNum);
+		map.put("sreYsemester", sreYsemester);
+		
+		log.info("map : "+map);
+		int result = scholarShipService.updateState(map);
+		int result2 = scholarShipService.insertRedetail(map);//수혜내역에 데이터 넣음
+		int result3 = scholarShipService.deleteRecomm(sreNum);//승인 및 반려 후 추천 테이블에서 삭제!
+		
+		
+		
+		log.info("/updateState에서 상태값 update된 결과 : "+result);
+		log.info("/updateState에서  수혜내역에 업뎃 된 결과 : "+result2);
+		log.info("/updateState에서 승인 및 반려 후 추천 테이블에서 삭제 한 결과 : "+result3);
+		return "redirect:/scholarship/recommendation_admin";
+	}
+
+	/**
+	 * 장학금 반려
+	 * 관리자
+	 */
+	@GetMapping("/updateState2")
+	public String updateState2(@RequestParam int stuNum
+								, @RequestParam int status
+								, @RequestParam("sreComre") String sreComre
+								) {
+		
+		log.info("/updateState2에서 stuNum의 값 : "+stuNum);
+		log.info("/updateState2에서 status의 값 : "+status);
+		log.info("/updateState2에서 sreComre의 값 : "+sreComre);
+
+		
+		Map<String, Object> map = new HashMap<>();
+		map.put("stuNum", stuNum);
+		map.put("status", status);
+		map.put("sreComre", sreComre);
+		log.info("map : "+map);
+		int result = scholarShipService.updateState2(map);
+		
+		log.info("/updateState에서 상태값 update된 결과 : "+result);
+		return "redirect:/scholarship/recommendation_admin";
+	}
+	
+	
+}

@@ -1,0 +1,55 @@
+package kr.or.ddit.study.general.controller;
+
+import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+import kr.or.ddit.study.general.service.StudyGeneralService;
+import kr.or.ddit.vo.StudyVO;
+import kr.or.ddit.vo.UserVO;
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
+@Controller
+@RequestMapping("/study")
+public class StudyGeneralController {
+	
+	@Autowired
+	StudyGeneralService sgService;
+	
+	/**
+	 * 스터디 전체 리스트 페이지
+	 * @param request
+	 * @return
+	 */
+	@GetMapping("/myStudyList")
+	public String myStudyList(HttpServletRequest request, Model model) {
+		
+		HttpSession session = request.getSession();
+		UserVO userVO = (UserVO) session.getAttribute("userVO");
+		int stuNum = userVO.getUsername();
+		List<StudyVO> studyVOList = sgService.getStudyList(stuNum);
+		
+		log.info("studyVOList : " + studyVOList);
+//		studyVOList : [
+//		StudyVO(sNum=1, stuNum=201901006, sNm=스터디 합시다1, sDt=Wed Mar 15 14:32:58 KST 2023, sGrade=1, 
+//				sCount=0, stuCount=0), 
+//		StudyVO(sNum=2, stuNum=201901006, sNm=스터디 합시다2, sDt=Wed Mar 15 14:32:58 KST 2023, sGrade=0, sCount=0, stuCount=0), StudyVO(sNum=3, stuNum=201901006, sNm=스터디 합시다7, sDt=Wed Mar 15 14:39:44 KST 2023, sGrade=2, sCount=0, stuCount=0), StudyVO(sNum=4, stuNum=201901006, sNm=스터디 합시다10, sDt=Wed Mar 15 14:40:02 KST 2023, sGrade=3, sCount=0, stuCount=0), StudyVO(sNum=6, stuNum=201901006, sNm=스터디 합시다12, sDt=Wed Mar 15 14:32:58 KST 2023, sGrade=0, sCount=0, stuCount=0)]
+		model.addAttribute("studyVOList", studyVOList);
+		
+		return "study/myStudyList";
+	}
+	
+	@PostMapping("/enterStudy")
+	public String enterStudy() {
+		return "study/enterStudy";
+	}
+}

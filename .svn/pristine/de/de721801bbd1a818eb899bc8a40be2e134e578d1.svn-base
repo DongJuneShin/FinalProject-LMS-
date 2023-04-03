@@ -1,0 +1,26 @@
+package kr.or.ddit.controller;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+@RequestMapping("/le")
+@Controller
+public class Yg_leController {
+	
+	/***
+	 * 강의평가
+	 * 학생
+	 */
+	@GetMapping("/le_stu")
+	public void le_stu() {}
+	
+	/**
+	 * 강의평가 조회
+	 * 교수 : 본인 강의만
+	 * 관리자 : 전체 강의
+	 */
+	@GetMapping("/le_check")
+	public void le_check() {}
+	
+}

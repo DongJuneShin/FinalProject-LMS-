@@ -1,0 +1,30 @@
+package kr.or.ddit.acad;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+@RequestMapping("/acadNotice")
+@Controller
+public class ACADNoticeBoardController {
+
+	@GetMapping("/list")
+	public String acadNoticeList() {
+		 return "acad/acadNoticeBoardList";
+	}
+
+	@GetMapping("/schList")
+	public String schList() {
+		return "acad/schList";
+	}
+
+	@GetMapping("/scolList")
+	public String scolList() {
+		return "acad/scolList";
+	}
+	
+	@GetMapping("/noticeForm")
+	public String noticeForm() {
+		return "acad/noticeForm";
+	}
+}

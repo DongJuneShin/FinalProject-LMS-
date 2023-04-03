@@ -1,0 +1,14 @@
+package kr.or.ddit.study.timetable.service;
+
+import java.util.List;
+
+import kr.or.ddit.vo.StudentVO;
+import kr.or.ddit.vo.TimeVO;
+
+public interface IStudyTimetableService {
+
+	public List<StudentVO> getStuList(int roomNumber);
+
+	public List<TimeVO> getTimeTableData(int stuNum);
+
+}

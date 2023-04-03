@@ -1,0 +1,385 @@
+<%@page import="kr.or.ddit.vo.StudyVO"%>
+<%@ page language="java" contentType="text/html;charset=UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<% 
+	StudyVO studyVO = (StudyVO) session.getAttribute("studyVO");
+%>
+
+<style type="text/css">
+.categoryBar{
+	color: gray;
+}
+thead{
+	text-align: center;
+}
+.card{
+	overflow: auto;
+}
+.search-sel{
+	width: 15%;
+	display: inline;
+}
+.search-inp{
+	width: 30%;
+	display: inline;
+}
+.search-btn{
+	display: inline;
+}
+
+.table-bordered{
+	text-align: center;
+}
+.card-body{
+	margin-top: 10px;
+	padding-top: 0px;
+}
+textarea{
+	resize: none;
+	width: 100%;
+	maxlength: 1000;
+}
+
+.scrolltbody {
+    display: block;
+    width: 700px;
+    border-collapse: collapse;
+}
+.scrolltbody tbody {
+    display: block;
+    height: 400px;
+    overflow: auto;
+}
+.dataTables_empty{
+	width: 700px;
+}
+
+<%
+if(studyVO.getsGrade() != 1){
+%>
+table.dataTable{
+ 	width: 80% !important;
+}
+.forTheMaster{
+	width: 20% !important;
+	display: none;
+}
+h5.tableHeader{
+	width: 80%;
+}
+<%
+}
+%>
+thCenter table.dataTable thead th{
+	text-align: center;
+}
+</style>
+
+
+<h4 class="title" id="dropdown-icon-demo">
+	<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAAAXNSR0IArs4c6QAAAFtJREFUSEtjZKAxYKSx+QyjFhAM4QEJov9QZ8Esh/EJuhZNH5iLzQc0t4BYlxKlbkDigCiXEatoQOJgNJJRomdAUhHN44DmFhCbxIlSNyBxQJTLiFU06gOCIQUAArwMGUsaCXEAAAAASUVORK5CYII="
+		style="position: relative; bottom: 2px; padding: 0px;" id="menuTab" class="btn dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false"/>
+	<%=studyVO.getsNm() %>
+	<ul class="dropdown-menu" style="">
+	  <li><a href="/study/studyMain" class="dropdown-item d-flex align-items-center"><i class="bx bx-chevron-right scaleX-n1-rtl"></i>메인</a></li>
+	  <li><a href="/study/scheduleMain" class="dropdown-item d-flex align-items-center"><i class="bx bx-chevron-right scaleX-n1-rtl"></i>스터디 일정</a></li>
+	  <li><a href="/study/timeTableMain" class="dropdown-item d-flex align-items-center"><i class="bx bx-chevron-right scaleX-n1-rtl"></i>스케줄 비교</a></li>
+	  <li>
+	    <hr class="dropdown-divider">
+	  </li>
+	  <li><a href="javascript:void(0);" id="btnExit" class="dropdown-item d-flex align-items-center" style="color: red;"><i class="bx bx-chevron-right scaleX-n1-rtl"></i>스터디 나가기</a></li>
+	  <li><a href="javascript:void(0);" id="btnReport" class="dropdown-item d-flex align-items-center" style="color: red;"><i class="bx bx-chevron-right scaleX-n1-rtl"></i>신고하고 나가기</a></li>
+	</ul>
+</h4>
+
+<div class="card">
+
+	<div class="card-body">
+		<br/>
+		<h5 class="tableHeader">참여자</h5>
+		<table class="table table-bordered forJoin thCenter">
+			<thead class="table-active">
+				<tr class="text-nowrap">
+					<th>학번</th>
+					<th>이름</th>
+					<th class="forTheMaster" style="width: 20%;"></th>
+				</tr>
+			</thead>
+			<tbody>
+				<c:set var="stuNum" value="<%=studyVO.getStuNum() %>"/>
+				<c:forEach var="student" items="${data}">
+					<c:if test="${student.S_GRADE le 1}">
+						<tr>
+							<td>${student.STU_NUM }</td>
+							<td>${student.STU_NM_KOR }</td>
+							<td class="forTheMaster">
+								<c:if test="${student.STU_NUM != stuNum}">
+									<button type="button" id="${student.STU_NUM}" class="btn btn-primary btn-sm btnKick">내보내기</button>
+								</c:if>
+							</td>
+						</tr>
+					</c:if>
+				</c:forEach>
+			</tbody>
+		</table>
+		
+		<br/>
+		<div style="margin-bottom: 25px;">
+			<h5 class="tableHeader">
+				초대 목록
+				<button type="button" class="btn btn-primary btn-md" style="float: right;" id="btnInviteModal"
+					data-bs-toggle="modal" data-bs-target="#inviteModal">초대하기</button>
+			</h5>
+		</div>
+		<table class="table table-bordered forInvite thCenter">
+			<thead class="table-active">
+				<tr class="text-nowrap">
+					<th>학번</th>
+					<th>이름</th>
+					<th class="forTheMaster" style="width: 20%;"></th>
+				</tr>
+			</thead>
+			<tbody>
+				<c:forEach var="student" items="${data}">
+					<c:if test="${student.S_GRADE == 3}">
+						<tr>
+							<td>${student.STU_NUM }</td>
+							<td>${student.STU_NM_KOR }</td>
+							<td class="forTheMaster">
+								<button type="button" id="${student.STU_NUM}" class="btn btn-primary btn-sm btnDelete">초대취소</button>
+							</td>
+						</tr>
+					</c:if>
+				</c:forEach>
+			</tbody>
+		</table>
+		<br/>
+		<h5 class="tableHeader">신청 목록</h5>
+		<table class="table table-bordered forApp thCenter">
+			<thead class="table-active">
+				<tr class="text-nowrap">
+					<th>학번</th>
+					<th>이름</th>
+					<th class="forTheMaster" style="width: 20%;"></th>
+				</tr>
+			</thead>
+			<tbody>
+				<c:forEach var="student" items="${data}">
+					<c:if test="${student.S_GRADE == 2}">
+						<tr>
+							<td>${student.STU_NUM }</td>
+							<td>${student.STU_NM_KOR }</td>
+							<td class="forTheMaster">
+								<button type="button" id="${student.STU_NUM}" class="btn btn-primary btn-sm btnUpdate">수락</button>
+								<button type="button" id="${student.STU_NUM}" class="btn btn-primary btn-sm btnDelete">거절</button>
+							</td>
+						</tr>
+					</c:if>
+				</c:forEach>
+			</tbody>
+		</table>
+	</div>
+</div>
+
+<div class="modal fade" id="inviteModal" tabindex="-1" style="display: none;" aria-hidden="true">
+	<div class="modal-dialog modal-lg modal-dialog-centered modal-simple modal-add-new-cc">
+		<div class="modal-content p-3 p-md-5">
+			<div class="modal-body">
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				<div class="row g-3">
+					<div class="col-md-12">
+						<h4 class="col-md-2">초대</h4>
+					</div>
+					<table class="table table-bordered2 scrolltbody" id="inviteDiv">
+						<thead class="table-active">
+							<tr class="text-nowrap">
+								<th style="width: 315px;">학번</th>
+								<th style="width: 315px;">이름</th>
+								<th style="width: 70px;"></th>
+							</tr>
+						</thead>
+						<tbody>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script>
+$(function () {
+	// 테이블 세팅
+	joinTable = $(".forJoin").DataTable({
+		searching: false,
+		info: false
+	});
+	inviteTable = $(".forInvite").DataTable({
+		searching: false,
+		info: false
+	});
+	appTable = $(".forApp").DataTable({
+		searching: false,
+		info: false
+	});
+	modalTable = $(".table-bordered2").DataTable({
+		info: false,
+		paging: false,
+		ordering: false
+	});
+	settingDatatables();
+});
+
+// 나가기 버튼
+$("#btnExit").on("click", function() {
+	if(!confirm("정말 \"<%=studyVO.getsNm() %>\"에서 나가시겠습니까?")){
+		return;
+	}
+	location.href = "/study/exitStudy";
+});
+
+// 내보내기 버튼
+$(document).on("click", ".btnKick", function() {
+	let $_this = $(this);
+	let stuNum = $_this.attr("id");
+	
+	let p_tr = $_this.closest("tr");
+	let stuNm = p_tr.children().eq(1).text();
+	
+	if(!confirm(stuNm + "(" + stuNum + ")님을 스터디에서 내보내시겠습니까?")){
+		return;
+	}
+	
+	let data = {"sNum" : parseInt("<%=studyVO.getsNum()%>"), 
+				"stuNum" : stuNum,
+				"sGrade" : -1};
+	
+
+	ajaxFunction(data, function() {
+		joinTable.row($_this.parents("tr")).remove().draw();
+		settingDatatables();
+	});
+});
+
+$(document).on("click", ".btnDelete", function() {
+	let $_this = $(this);
+	let stuNum = $_this.attr("id");
+	
+	let data = {"sNum" : parseInt("<%=studyVO.getsNum()%>"), 
+				"stuNum" : stuNum,
+				"sGrade" : -1};
+
+	let table = $_this.closest("table");
+	
+	ajaxFunction(data, function() {
+		if(table.hasClass("forInvite")){
+			inviteTable.row($_this.parents("tr")).remove().draw();
+		}
+		
+		if(table.hasClass("forApp")){
+			appTable.row($_this.parents("tr")).remove().draw();
+		}
+		
+		settingDatatables()
+	});
+});
+
+$(".btnUpdate").on("click", function() {
+	let $_this = $(this);
+	let stuNum = $_this.attr("id");
+	
+	let data = {"sNum" : parseInt("<%=studyVO.getsNum()%>"), 
+				"stuNum" : stuNum,
+				"sGrade" : 0};
+
+	ajaxFunction(data, function() {
+		let p_tr = $_this.closest("tr");
+		let p_tbody = p_tr.closest("tbody");
+		let stuNmKor = p_tr.children().eq(1).text();
+		
+		appTable.row($_this.parents("tr")).remove().draw();
+		
+		let datasets = $(".forJoin").find("tbody").append('<tr><td>' + stuNum + '</td><td>' + stuNmKor + '</td><td class="forTheMaster"><button type="button" id="' + stuNum + '" class="btn btn-primary btn-sm btnKick">내보내기</button></td></tr>');
+		appTable.row.add(datasets).draw();
+		settingDatatables();
+	});
+});
+
+$(document).on("click", ".btnInvite", function() {
+	let target = $(this).parent();
+	target.html("<span style='color: red;'>초대중</span>");
+	
+	let stuNum = target.prev().prev().text();
+	let stuNmKor = target.prev().text();
+	let data = {"sNum" : parseInt("<%=studyVO.getsNum()%>"),
+				"stuNum" : stuNum, 
+				"sNm": "<%=studyVO.getsNm() %>",
+				"sGrade" : 3};
+	
+	ajaxFunction(data, function() {
+		let target = $(".forInvite").find("tbody");
+		target.find(".dataTables_empty").remove();
+		target.append('<tr><td>' + stuNum + '</td><td>' + stuNmKor + '</td><td class="forTheMaster"><button type="button" id="' + stuNum + '" class="btn btn-primary btn-sm btnDelete">초대취소</button></td></tr>');
+	});
+});
+
+
+function ajaxFunction(data, fn) {
+	$.ajax({
+		url: "/study/modiStudyGrade",
+		data: data,
+		type: "post",
+		success: function(result) {
+			if(result == 1){ fn() }
+		}
+	});
+}
+
+// 초대 모달 오픈
+$("#btnInviteModal").on("click", function() {
+	$.ajax({
+		url: "/study/inviteList",
+		type: "get",
+		success: function(result) {
+			let body = $("#inviteDiv").find("tbody");
+			let str = "";
+			$.each(result, function(i, v) {
+				str +=  '<tr>                                                                      ';
+				str +=	'<td style="width: 315px;">' + v.STU_NUM + '</td>                                                                  ';
+				str +=	'<td style="width: 315px;">' + v.STU_NM_KOR + '</td>                                                                  ';
+				str +=	'<td style="width: 70px;">                                                      ';
+				str +=	'	<button type="button" class="btn btn-primary btn-sm btnInvite">초대</button>';
+				str +=	'</td>                                                                          ';
+				str +=	'</tr>';
+			});
+			body.html(str);
+			
+			modalTable.draw();
+			
+		}
+	});
+});
+
+$(".btn-close").on("click", function() {
+	$("#inviteDiv_filter").find("input[type='search']").val("");
+});
+
+function settingDatatables(){
+	$("#DataTables_Table_0_length").css("display", "none");
+	$("#DataTables_Table_1_length").css("display", "none");
+	$("#DataTables_Table_2_length").css("display", "none");
+	$("select[name='DataTables_Table_0_length']").append("<option value='5' selected>5</option>")
+	$("select[name='DataTables_Table_0_length']").val("5").trigger("change");
+	$("select[name='DataTables_Table_1_length']").append("<option value='5' selected>5</option>")
+	$("select[name='DataTables_Table_1_length']").val("5").trigger("change");
+	$("select[name='DataTables_Table_2_length']").append("<option value='5' selected>5</option>")
+	$("select[name='DataTables_Table_2_length']").val("5").trigger("change");
+// 	$("#DataTables_Table_0_filter > label").css("display", "none");
+// 	$("#DataTables_Table_1_filter > label").css("display", "none");
+// 	$("#DataTables_Table_2_filter > label").css("display", "none");
+// 	$("#DataTables_Table_0_info").parent().remove();
+// 	$("#DataTables_Table_1_info").parent().remove();
+// 	$("#DataTables_Table_2_info").parent().remove();
+	$(".forTheMaster").removeClass("sorting");
+}
+</script>

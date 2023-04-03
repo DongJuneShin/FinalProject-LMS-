@@ -1,0 +1,21 @@
+package kr.or.ddit.mapper;
+
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.stereotype.Repository;
+
+import kr.or.ddit.vo.AdminVO;
+
+@Repository
+public interface EmployeeMapper {
+	
+	// (관리자) 리스트 조회
+	public List<AdminVO> admList();
+
+	// (관리자) 1명 상세조회
+	public AdminVO empNum(Map<String, Object> map);
+
+	// (관리자)
+	public int deleteNum(Map<String, Object> map);
+}

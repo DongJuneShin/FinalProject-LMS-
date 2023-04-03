@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- namespace : xml파일이 여러개일 수 있으므로 
+	이를 구별하기 위한 식별 용도로 사용
+-->
+<mapper namespace="kr.or.ddit.mapper.ChatMapper">
+
+	<select id="getChatList" resultType="chatVO">
+		SELECT ROWNUM AS CHAT_NUM, NVL(STU_NUM, '알수없음') STU_NUM, CHAT_CONT, CHAT_DATE
+		FROM CHAT
+		ORDER BY CHAT_NUM
+	</select>
+	
+	<insert id="insertChat" parameterType="chatVO">
+		<selectKey resultType="int" order="BEFORE" keyProperty="chatNum">
+			SELECT SEQ_CHAT.NEXTVAL FROM DUAL
+		</selectKey>
+		INSERT INTO CHAT(CHAT_NUM, STU_NUM, CHAT_CONT, CHAT_DATE)
+		VALUES(#{chatNum}, #{stuNum}, #{chatCont}, SYSDATE)
+	</insert>
+	
+	<update id="updateLast" parameterType="chatVO">
+    	UPDATE STUDY 
+    	SET LAST_CHAT = (SELECT COUNT(*)
+						   FROM (SELECT ROWNUM RNUM, CHAT_NUM FROM CHAT)
+						 )
+    	WHERE STU_NUM = #{stuNum}
+	</update>
+	
+	<select id="getMsgCount" parameterType="string" resultType="int">
+		SELECT (A.ALLCOUNT - B.LAST_CHAT)
+		FROM (SELECT COUNT(*) ALLCOUNT FROM CHAT) A,
+		     (SELECT LAST_CHAT FROM STUDY WHERE STU_NUM = #{stuNum}) B
+	</select>
+
+	<select id="readCount" resultType="readCountVO">
+		SELECT COUNT(*) PLUS, LAST_CHAT
+		FROM STUDY
+		GROUP BY LAST_CHAT
+		ORDER BY LAST_CHAT ASC
+	</select>
+	
+	<select id="getStuCount" resultType="int">
+		SELECT COUNT(*) FROM STUDY
+	</select>
+</mapper>

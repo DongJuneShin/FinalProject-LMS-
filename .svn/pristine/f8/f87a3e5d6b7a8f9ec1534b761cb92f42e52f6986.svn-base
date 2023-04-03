@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.ddit.mapper.DPMapper">
+	<sql id="where">
+			<if test="college!=null and college!=''">
+				AND   (T.COLL_NM   LIKE '%' || #{college} || '%')
+			</if>
+  	</sql>
+
+ 	 <select id="getTotal" parameterType="HashMap" resultType="int">
+	 	  WITH T AS (
+            SELECT ROW_NUMBER() OVER(ORDER BY C.COLL_NUM DESC) RNUM,
+                    D.DEPT_NUM, D.COLL_NUM, D.DEPT_NM, D.DEPT_NUMBER, C.COLL_NM
+		      FROM DEPARTMENT D, COLLEAGE C
+	  	     WHERE D.COLL_NUM = C.COLL_NUM
+	  	     )
+ 	 	    SELECT COUNT(*) TOTAL
+	    	  FROM   T
+	    	 WHERE  1 = 1
+	 	 	<include refid="where" />
+ 	 </select>
+
+	<!-- (관리자) 학과 전체조회 -->
+	<select id="deptList" resultType="departmentVO">
+	  	  WITH T AS (
+            SELECT ROW_NUMBER() OVER(ORDER BY D.DEPT_NUM ASC) RNUM,
+                    D.DEPT_NUM, D.COLL_NUM, D.DEPT_NM, D.DEPT_NUMBER, C.COLL_NM
+		      FROM DEPARTMENT D, COLLEAGE C
+	  	     WHERE D.COLL_NUM = C.COLL_NUM
+	  	     )
+            SELECT T.DEPT_NUM, T.COLL_NUM, T.DEPT_NM, T.DEPT_NUMBER, T.COLL_NM
+		      FROM T
+	       	 WHERE T.RNUM BETWEEN (#{currentPage} * #{size}) - (#{size} - 1) and (#{currentPage} * #{size})
+	       	 <include refid="where" />
+             ORDER BY DEPT_NUM ASC
+	</select>
+	
+	<select id="getCollNm" resultType="departmentVO">
+		SELECT COLL_NM
+		  FROM COLLEAGE
+		 ORDER BY COLL_NUM ASC
+	</select>
+ 	
+ 	<select id="getDeptNm" resultType="departmentVO">
+ 		SELECT DEPT_NM
+		  FROM DEPARTMENT
+  		 ORDER BY DEPT_NUM ASC
+ 	</select>
+ 	
+ 	<delete id="deleteNum" parameterType="HashMap">
+ 		DELETE DEPARTMENT WHERE DEPT_NUM = #{deptNum}
+ 	</delete>
+ 	
+<!--  	<insert id="createDeptNm" parameterType="HashMap"> -->
+<!--  		<selectKey order="BEFORE" keyProperty="selectCollNum" resultType="int"> -->
+<!-- 			SELECT NVL(MAX(COLL_NUM),0)+1 FROM COLLEAGE -->
+<!--  		</selectKey> -->
+<!--  		INSERT INTO DEPARTMENT (DEPT_NUM,COLL_NUM,DEPT_NM,DEPT_NUMBER,DEPT_FEES) -->
+<!-- 		VALUES(#{selectCollNum},#{collNum},#{deptNm},#{deptNumber},#{deptFees}) -->
+<!--  	</insert> -->
+ 	
+</mapper>
+

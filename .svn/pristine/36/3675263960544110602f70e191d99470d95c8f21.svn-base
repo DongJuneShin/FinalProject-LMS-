@@ -1,0 +1,14 @@
+package kr.or.ddit.mypage.service;
+
+import kr.or.ddit.vo.TeacherVO;
+import kr.or.ddit.vo.UserVO;
+
+public interface ITeaMypageService {
+
+	public TeacherVO teaInfo(int username);
+
+	public int teaMypageUpdate(TeacherVO teaVO);
+
+	public int pwUpdate(UserVO userVO);
+
+}

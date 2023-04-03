@@ -1,0 +1,10 @@
+package kr.or.ddit.mapper;
+
+public interface DPNoticeBoardMapper {
+
+	public int getDnNum();
+
+
+
+
+}

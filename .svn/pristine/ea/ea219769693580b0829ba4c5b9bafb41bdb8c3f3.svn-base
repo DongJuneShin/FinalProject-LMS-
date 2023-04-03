@@ -1,0 +1,92 @@
+package kr.or.ddit.gradeobjection;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
+import org.apache.commons.collections.map.HashedMap;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import kr.or.ddit.gradeobjection.service.GradeObjectionService;
+import kr.or.ddit.vo.CourseListVO;
+import kr.or.ddit.vo.ReportCardVO;
+import kr.or.ddit.vo.StudentVO;
+import kr.or.ddit.vo.UserVO;
+import lombok.extern.slf4j.Slf4j;
+
+
+@Slf4j
+@RequestMapping("/grade")
+@Controller
+public class GradeObjectionController {
+
+	@Autowired
+	GradeObjectionService gradeService;
+	
+	/**
+	 * 성적이의 신청
+	 * 학생 : 수강중인 강의 리스트
+	 * 교수 : 이의신청한 학생 리스트
+	 */
+	@GetMapping("/gradeObjc")
+	public String gradeObjc(HttpServletRequest request,Model model, Map<String, Object> map) {
+		
+		HttpSession session = request.getSession();
+		UserVO userVO = (UserVO) session.getAttribute("userVO");
+		map.put("stuNum", Integer.parseInt(userVO.getUsername()+""));
+		
+		StudentVO student = this.gradeService.getStuInfo(map);
+		
+		List<CourseListVO> gradeObjectionList = this.gradeService.gradeObjectionList(map);
+		model.addAttribute("data", gradeObjectionList);
+		model.addAttribute("student",student);
+		return "grade/gradeObjc";
+	}
+	
+	/**
+	 * 학생 : 내 성적 리스트
+	 */
+	@ResponseBody
+	@PostMapping("/detail")
+	public Map<String,Object> detail(@RequestBody Map<String, Object> map,
+									HttpServletRequest request){
+		log.info("detail에서 넘어온  sbjNum : "+ map);
+		
+		ReportCardVO reportCardVO = this.gradeService.detail(map);
+		log.info("reportCardVO : " + reportCardVO);
+		Map<String, Object> map2 = new HashMap<String, Object>();
+		map2.put("reportCardVO", reportCardVO);
+		return map2;
+	}
+	
+	/**
+	 * 이의신청 내용 insert
+	 * @param map
+	 * @param request
+	 * @return
+	 */
+	@ResponseBody
+	@PostMapping("/create")
+	public Map<String,Object> create(@RequestBody Map<String, Object> map,
+			HttpServletRequest request){
+		log.info("create에서 넘어온  sbjNum : "+ map);
+		
+		int insertResult = gradeService.create(map);
+		log.info("insertResult 의 결과값 : "+insertResult);
+		Map<String,Object> map2 = new HashMap<>();
+		map2.put("insertResult", insertResult);
+		
+		return map2;
+	}
+	
+}

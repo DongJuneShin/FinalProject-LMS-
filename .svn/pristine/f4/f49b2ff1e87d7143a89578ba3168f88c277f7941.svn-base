@@ -1,0 +1,9 @@
+package kr.or.ddit.vo;
+
+public class CourseAtVO {
+	private int atNum; 
+	private int ltNum;
+	private int atWeek; 
+	private int atStuNum; 
+	private int atCheck;
+}

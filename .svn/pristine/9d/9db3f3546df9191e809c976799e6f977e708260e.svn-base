@@ -1,0 +1,7 @@
+package kr.or.ddit.certificate.service;
+
+public interface CertificateService {
+
+	public int getPrice(String ctSnum);
+
+}

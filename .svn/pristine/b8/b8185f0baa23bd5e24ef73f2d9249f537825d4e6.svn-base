@@ -1,0 +1,256 @@
+package kr.or.ddit.controller;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+import java.util.UUID;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
+
+import kr.or.ddit.service.ProductService;
+import kr.or.ddit.vo.ProductVO;
+import lombok.extern.slf4j.Slf4j;
+import net.coobird.thumbnailator.Thumbnailator;
+
+@Slf4j
+@Controller
+@RequestMapping("/product")
+public class ProductController {
+	@Autowired
+	ProductService productService;
+	
+	//요청 URI : /product/list
+	//요청방식 : get
+	@GetMapping("/list")
+	public String list(Model model) {
+		List<ProductVO> productVOList = this.productService.list();
+		model.addAttribute("data", productVOList);
+		
+		log.info("productVOList : "+productVOList);
+		
+		//forwarding. product폴더의 list.jsp를 리턴해줌
+		return "product/list";
+	}
+	
+	//요청 URI : /product/create
+	//요청방식 : get
+	@GetMapping("/create")
+	public String create(Model model) {
+		
+		//forwarding. 
+		return "product/create";
+	}
+	
+	/*
+	 요청URI : /product/create
+	요청방식 : post
+	메소드명 : createPost
+	PRODUCT 테이블에 입력해보자
+	 */
+	@PostMapping("/create")
+	public String createPost(@ModelAttribute ProductVO productVO) {
+		/*
+		 productVO : ProductVO(productId=P1237, pname=Galaxy Note 20, unitPrice=1000
+		 , description=<p>상품 설명</p>
+		, manufacturer=Samsung, category=Smart Phone, unitsInStock=1000, condition=New
+		, filename=null, quantity=0, productImage=파일객체)
+		 */
+		log.info("productVO : " + productVO);
+		
+		//1) 파일이 저장되는 경로 세팅(/resources/upload)
+		//	String uploadFolder = ...
+		String uploadFolder 
+		= "C:\\eGovFrameDev-3.10.0-64bit\\workspace\\egovProj\\src\\main\\webapp\\resources\\upload";
+		
+		//2) 연/월/일 폴더가 없으면 생성
+		//	File uploadPath = new File(uploadFolder, getFolder());
+		File uploadPath = new File(uploadFolder, getFolder());
+		if(uploadPath.exists()==false) {
+			uploadPath.mkdirs();
+		}
+		
+		//3) MultipartFile[] productImage = productVO.getProductImage();  
+		//		for(MultipartFile multipartFile : productImage)
+		MultipartFile[] productImage = productVO.getProductImage();
+		String uploadFileName = "";
+		
+		for(MultipartFile multipartFile : productImage) {
+			log.info("------------------");
+			log.info("upload file name : " + multipartFile.getOriginalFilename());
+			log.info("upload file size : " + multipartFile.getSize());
+		
+			//3-1) UUID 처리
+			uploadFileName = multipartFile.getOriginalFilename();
+						
+			//3-2) uploadFileName = uuid.toString() + "_" + uploadFileName;
+			UUID uuid = UUID.randomUUID();
+			uploadFileName = uuid.toString() + "_" + uploadFileName;
+			
+			//3-3) File객체 설계(복사할 대상 경로, 파일명)
+			//		File saveFile = new File(uploadPath, uploadFileName)
+			File saveFile = new File(uploadPath, uploadFileName);
+			
+			//3-4) //파일 복사
+			//		multipartFile.transferTo(saveFile);
+			try {
+				multipartFile.transferTo(saveFile);
+				
+				//3-5) 썸네일 처리
+				if(checkImageType(saveFile)) {
+					FileOutputStream thumbnail = new FileOutputStream(
+							new File(uploadPath, "s_"+uploadFileName)
+							);
+					Thumbnailator.createThumbnail(multipartFile.getInputStream(),thumbnail,100,100);
+					thumbnail.close();
+				}
+			} catch (IllegalStateException | IOException e) {
+				log.error(e.getMessage());
+			}
+			
+			
+		}
+		//4) productVO.setFilename(파일full경로+명);
+		// /2023/02/17/dsflksdfj_개똥이.jpg
+		String filename = "/" + getFolder().replaceAll("\\\\","/") + "/" + uploadFileName;
+		productVO.setFilename(filename);
+		log.info("productVO.getFilename() : " + productVO.getFilename());
+		
+		int result =  this.productService.createPost(productVO);
+		log.info("result : " + result);
+		
+		if(result > 0) {//등록 성공
+			//redirect : URI 재요청
+			return "redirect:/product/list";
+		}else {//등록 실패
+			return "redirect:/product/create";
+		}
+	}
+	
+	//요청URI : /product/getProductId
+	//json으로 응답 시 ResponseBody
+	//1) String : dataType="json" 생략
+	//2) List<...VO>, ..VO, Map<String,String>, List<Map<String,String>> : dataType="json"(ajax에서 해줌)
+	@ResponseBody
+	@GetMapping("/getProductId")
+	public String getProductId() {
+		String res = this.productService.getProductId();
+		
+		log.info("res : " + res);
+		//아작났어유..피씨다타써. success:function(result){
+		//dataType="json"생략
+		//List<..VO>  => 달러.each(result,function(index,data)
+		//result : List<ProductVO>
+		//data : ProductVO
+		//index : 0부터 1씩 증가
+
+		return res;
+	}
+	
+	//요청URI: /product/detail?productId=P1234
+	//요청URL: /product/detail
+	//요청파라미터 : productId=P1234
+	@GetMapping("/detail")
+	public String detail(@ModelAttribute ProductVO productVO, Model model) {
+		log.info("productVO : "+productVO);
+
+		//detail서비스를 구현해보자
+		//구현 전 : productVO{productId=P1234,pname=null,unitPrice=0...}
+		productVO = this.productService.getProduct(productVO);
+		//구현 후 : productVO{productId=P1234,pname=iPhone 6s,unitPrice=800000...}
+		log.info("productVO : "+productVO);
+		
+		model.addAttribute("data", productVO);
+		
+		//forwarding -> /views/product/폴더 안의detail.jsp를 리턴
+		return "product/detail";
+	}
+	
+	//요청URI: /product/updatePost
+	//요청파라미터 : {productId=P1234,pname=iPhone 6s,unitPrice=800000...}
+	//요청방식 : post
+	@PostMapping("/updatePost")
+	public String updatePost(@ModelAttribute ProductVO productVO, Model model) {
+		log.info("productVO : "+productVO);
+		//기본키 백업
+		String oldProductId = productVO.getProductId();
+		
+		//서비스처리(merge into로 처리해보자)
+		int result = this.productService.updatePost(productVO);
+		log.info("result : "+result);
+		
+		//redirect
+		return "redirect:/product/detail?productId=" + oldProductId;
+	}
+	
+	//요청URI: /product/deletePost
+	//요청파라미터 : {productId=P1234,pname=iPhone 6s,unitPrice=800000...}
+	//요청방식 : post
+	@PostMapping("/deletePost")
+	public String deletePost(@ModelAttribute ProductVO productVO, Model model) {
+		log.info("productVO : "+productVO);
+		
+		//서비스처리
+		int result = this.productService.deletePost(productVO);
+		log.info("result : "+result);
+		
+		if(result>0) {
+			//redirect
+			return "redirect:/product/list";
+		}else {
+			return "redirect:/product/detail?productId=" + productVO.getProductId();
+		}
+	}
+	
+//	//요청 URI : /product/create2 (이거슨 나의 jsp)
+//	//요청방식 : get
+//	@GetMapping("/create2")
+//	public String create2(Model model) {
+//		
+//		//forwarding. 
+//		return "product/create2";
+//	}
+	//연/월/일 폴더 생성
+	public static String getFolder() {
+		//2023-01-27 형식(format) 지정
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		
+		//날짜 객체 생성(java.util 패키지)
+		Date date = new Date();
+		//2023-01-27=>2023\\01\\27
+		String str = sdf.format(date);
+		//단순 날짜 문자를 File객체의 폴더 타입으로 바꾸기
+		//2023\\01\\27
+		return str.replace("-", File.separator);
+	}
+	public static boolean checkImageType(File file) {
+	      /*
+	       .jpeg / .jpg(JPEG 이미지)의 MIME 타입 : image/jpeg
+	       */
+	      //MIME 타입을 통해 이미지 여부 확인
+	      //file.toPath() : 파일 객체를 path객체로 변환
+	      try {
+	    	  //Files : java.nio.file
+	         String contentType = Files.probeContentType(file.toPath());
+	         log.info("contentType : " + contentType);
+	         //MIME 타입 정보가 image로 시작하는지 여부를 return
+	         return contentType.startsWith("image");
+	      } catch (IOException e) {
+	         e.printStackTrace();
+	      }
+	      //이 파일이 이미지가 아닐 경우
+	      return false;
+	   }
+}
+

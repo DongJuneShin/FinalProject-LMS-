@@ -1,0 +1,58 @@
+package kr.or.ddit.common.service.impl;
+
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import kr.or.ddit.common.service.MessageService;
+import kr.or.ddit.mapper.MessageMapper;
+import kr.or.ddit.vo.AdminVO;
+import kr.or.ddit.vo.NoteVO;
+import kr.or.ddit.vo.StudentVO;
+import kr.or.ddit.vo.TeacherVO;
+import kr.or.ddit.vo.UserVO;
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
+@Service
+public class MessageServiceImpl implements MessageService{
+	
+	@Autowired
+	MessageMapper msgMapper;
+	
+	@Override
+	public List<NoteVO> getNoteList(UserVO userVO) {
+		List<NoteVO> vo = msgMapper.getNoteList(userVO);
+		log.info("noteVO : "+ vo);
+		return vo;
+	}
+
+	@Override
+	public Map<String, Integer> msgCount() {
+		int unread = msgMapper.unReadMsgCount();
+		int send = msgMapper.sendMsgCount();
+		int rev = msgMapper.revMsgCount();
+		return null;
+	}
+
+	@Override
+	public List<StudentVO> stuList() {
+		List<StudentVO> stu = msgMapper.stuList();
+		return null;
+	}
+
+	@Override
+	public List<TeacherVO> teaList() {
+		List<TeacherVO> stu = msgMapper.teaList();
+		return null;
+	}
+
+	@Override
+	public List<AdminVO> empList() {
+		List<AdminVO> stu = msgMapper.empList();
+		return null;
+	}
+
+}

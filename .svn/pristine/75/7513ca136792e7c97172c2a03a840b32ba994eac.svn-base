@@ -1,0 +1,89 @@
+<%@ page language="java" contentType="text/html;charset=UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@page import="kr.or.ddit.vo.UserVO"%>
+<%@page import="org.apache.catalina.Session"%>
+
+<%
+	UserVO userVO = (UserVO)session.getAttribute("userVO");
+%>
+
+
+<div class="row">
+
+	<div class="col-md-5">
+		<div class="card" style="height: 490px;">
+			<div class="card-body">
+				<div class="mx-auto mb-3 text-center">
+          			<img src="/resources/upload<%=userVO.getPhoto() %>" alt="Avatar Image" class="rounded-circle w-px-100">
+        		</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="col-md-7">
+		<div class="card" style="height: 230px;">
+			<div class="card-body">
+				학사일정
+			</div>
+		</div>
+		<br />
+		<div class="card" style="height: 233px;">
+			<div class="card-body">
+				학과일정
+			</div>
+		</div>
+	</div>
+
+</div>
+
+<br />
+
+<div class="row">
+
+	<div class="col-md-8">
+		<div class="card" style="height: 550px;">
+			<div class="card-body">
+				학사일정
+			</div>
+		</div>
+	</div>
+
+	<div class="col-md-4">
+		<div class="card" style="height: 550px;">
+			<div class="card-body">
+				개인시간표
+			</div>
+		</div>
+	</div>
+
+</div>
+
+<br />
+
+<div class="row">
+
+	<div class="col-md-4">
+		<div class="card" style="height: 500px;">
+			<div class="card-body">
+				참여중인 스터디 리스트
+			</div>
+		</div>
+	</div>
+
+	<div class="col-md-4">
+		<div class="card" style="height: 500px;">
+			<div class="card-body">
+				상담신청 리스트
+			</div>
+		</div>
+	</div>
+
+	<div class="col-md-4">
+		<div class="card" style="height: 500px;">
+			<div class="card-body">
+				시설예약 리스트
+			</div>
+		</div>
+	</div>
+
+</div>

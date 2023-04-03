@@ -1,0 +1,57 @@
+package kr.or.ddit.exam;
+
+import javax.inject.Inject;
+
+import org.springframework.stereotype.Service;
+
+import kr.or.ddit.mapper.ExamMapper;
+import kr.or.ddit.vo.SubjectVO;
+
+@Service
+public class ExamServiceImpl implements ExamService {
+
+	@Inject
+	ExamMapper examMapper;
+	
+	/**
+	 * 교수가 시험을 내기 전에 미리 시험문제를 냈는지 안냈는지 체크
+	 * 미리 냈으면 count가 1 이상 없으면 0
+	 * @param string
+	 * @return
+	 */
+	@Override
+	public int examCheck(String string) {
+		return examMapper.examCheck(string);
+	}
+	
+	/**
+	 * 시험을 등록한다는 EXAM 테이블에 등록을함
+	 * @param sbjNum
+	 * @return
+	 */
+	@Override
+	public int examMake(String sbjNum) {
+		return examMapper.examMake(sbjNum);
+	}
+
+	/**
+	 * 과목에 대한 상세정보 가져오기
+	 * @param sbjNum
+	 * @return
+	 */
+	@Override
+	public SubjectVO subjectDetail(String sbjNum) {
+		return examMapper.subjectDetail(sbjNum);
+	}
+
+	/***
+	 * 시험과목의 exam테이블에서 등록된 시험 번호를 가져옴
+	 * @param sbjNum
+	 * @return
+	 */
+	@Override
+	public int getExamNum(String sbjNum) {
+		return examMapper.getExamNum(sbjNum);
+	}
+
+}

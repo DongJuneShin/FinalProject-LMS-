@@ -1,0 +1,53 @@
+package kr.or.ddit.mapper;
+
+import java.util.Map;
+
+public interface GraduationMapper {
+	//학생 학적정보 출력
+	//<select id="getStuInfo" parameterType="int" resultType="hashMap">
+	public Map<String, Object> getStuInfo(int stuNum);
+
+	//전체학기 전공 이수학점 조회(전필/전선)
+	//<select id="getSumMRecode" parameterType="hashMap" resultType="int">
+	public int getSumMRecode(Map<String, Object> infoMap);
+
+	//금학기 전공 이수학점 조회(전필/전선)
+	//<select id="getThisSumMRecode" parameterType="hashMap" resultType="int">
+	public int getThisSumMRecode(Map<String, Object> infoMap);
+
+	//교양 이수학점 조회(교필/교선)
+	//<select id="getSumERecode" parameterType="hashMap" resultType="int">
+	public int getSumERecode(Map<String, Object> infoMap);
+
+	//금학기 교양 이수학점 조회(교필/교선)
+	//<select id="getThisSumERecode" parameterType="hashMap" resultType="int">
+	public int getThisSumERecode(Map<String, Object> infoMap);
+
+	//전체학기 평균평점 조회
+	//<select id="getAvgFscore" parameterType="int" resultType="hashMap">
+	public Map<String, Object> getAvgFscore(int stuNum);
+
+	//F학점 갯수 조회
+	//<select id="getFCnt" parameterType="int" resultType="int">
+	public int getFCnt(int stuNum);
+
+	//(학생)조기졸업 신청
+	//<select id="appEG" parameterType="hashMap">
+	public int appEG(Map<String, Object> egMap);
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+

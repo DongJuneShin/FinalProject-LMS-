@@ -1,0 +1,27 @@
+package kr.or.ddit.service;
+
+import java.util.List;
+
+import kr.or.ddit.vo.ProductVO;
+
+public interface ProductService {
+	//메소드 시그니처
+	
+	// 제품 목록
+	public List<ProductVO> list();
+
+	// 제품 등록
+	public int createPost(ProductVO productVO);
+
+	//제품아이디 생성
+	public String getProductId();
+
+	// 제품 상세
+	public ProductVO getProduct(ProductVO productVO);
+	
+	//제품 등록
+	public int updatePost(ProductVO productVO);
+	
+	//제품 삭제
+	public int deletePost(ProductVO productVO);
+}

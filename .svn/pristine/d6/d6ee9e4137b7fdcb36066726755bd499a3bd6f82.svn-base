@@ -1,0 +1,206 @@
+<%@ page language="java" contentType="text/html;charset=UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<script src="/resources/js/jquery-3.6.0.js"></script>
+<style type="text/css">
+.card{
+	min-height: 100%;
+}
+.categoryBar{
+	color: gray;
+}
+.si_target{
+	width: 60%;
+	text-align: center;
+}
+thead{
+	text-align: center;
+}
+.table > thead {
+	vertical-align: middle;
+}
+th{
+ 	white-space: pre-line;
+ 	text-align: center;
+ }
+tr td:not(:first-of-type) {
+  text-align: center;
+}
+.div-header{
+	text-align: right;
+	margin: 5px;
+	padding-right: 1.625rem;
+}
+.innerCard{
+	border: 1px solid lightgray;
+	border-radius: 5px;
+	margin: 5px;
+	padding: 10px;
+}
+.search-sel{
+	width: 20%;
+	display: inline;
+}
+.left-container{
+	width: 40%;
+	float: left;
+	margin: 10px;
+}
+.right-container{
+	width: 55%;
+	float: right;
+	margin: 10px;
+}
+.border-box{
+	border: 1px solid lightgray;
+	border-radius: 5px;
+}
+textarea{
+	resize: none;
+	width: 100%;
+	maxlength: 100;
+}
+</style>
+
+<h5 class="title categoryBar">강의평가</h5>
+
+<div class="card">
+
+	<div class="div-header">
+		<button type="button" class="btn btn-label-primary btnWrite">조회</button>
+		<button type="button" class="btn btn-label-primary btnWrite">저장</button>
+	</div>
+	
+	<div class="container">
+		<div class="card innerCard">
+			<div class="row g-3">
+				<div class="col-md-6">
+					<div class="row infoDiv">
+						<label class="col-sm-2 col-form-label text-sm-end" for="year">연도</label>
+							<select id="year" class="col-sm-4 form-select search-sel year" aria-label="Default select example">
+								<option value="2023" selected>2023</option>
+								<option value="2022">2022</option>
+								<option value="2022">2022</option>
+							</select>
+						<label class="col-sm-2 col-form-label text-sm-end" for="semester">학기</label>
+						<select id="semester" class="col-sm-4 form-select search-sel semester" aria-label="Default select example">
+							<option value="1">1</option>
+							<option value="2">2</option>
+						</select>
+					</div>
+				</div>
+				
+				<div class="col-md-6">
+					<div class="row infoDiv">
+						<label class="col-sm-3 col-form-label text-sm-end">학번/성명</label>
+						<div class="col-sm-4">
+							<input type="text" id="stuNum" class="form-control" value="202020" readonly>
+						</div>
+						<div class="col-sm-4">
+							<input type="text" id="stuNmKor" class="form-control" value="오대리" readonly>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<div class="container">
+		<div class="left-container">
+		<h5 class="title categoryBar">수강신청 강좌 목록</h5>
+			<div class="border-box">
+				<table class="table table-bordered">
+					<thead class="table-active">
+						<tr class="text-nowrap">
+							<th class="si_target">교과목명</th>
+							<th>담당교수</th>
+							<th>강의평가<br/>여부</th>
+						</tr>
+					</thead>
+					<tbody>
+						<c:forEach var="lectureEvaVO" items="${data}" varStatus="stat">
+							<tr class="subject">
+								<td>${lectureEvaVO.sbjTitle}</td>
+								<td>${lectureEvaVO.teaNmKor}</td>
+								<td>X</td>
+							</tr>
+						</c:forEach>
+					</tbody>
+				</table>
+			</div>
+		</div>
+		
+		<div class="right-container" style="display: none">
+			<h5 class="title categoryBar">객관식 문항 [총 5건]</h5>
+			<div class="border-box">
+				<table class="table table-bordered" style="table-layout: fixed; width: 100%; table-layout: fixed;">
+					<thead class="table-active">
+						<tr class="text-nowrap">
+							<th class="si_target">평가 문항</th>
+							<th style="padding: 0px;">전혀<br/>아니다</th>
+							<th style="padding: 0px;">대체로<br/>아니다</th>
+							<th style="padding: 0px;">보통이다</th>
+							<th style="padding: 0px;">대체로<br/>그렇다</th>
+							<th style="padding: 0px;">매우<br/>그렇다</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td>1.교수님의 수업준비가 만족하였다</td>
+							<td><input name="1" type="radio" value="" id="1"></td>
+							<td><input name="1" type="radio" value="" id="1"></td>
+							<td><input name="1" type="radio" value="" id="1"></td>
+							<td><input name="1" type="radio" value="" id="1"></td>
+							<td><input name="1" type="radio" value="" id="1"></td>
+						</tr>
+						<tr>
+							<td>2.교수님은 강의 계획안에 나타난 강의목표를 충족시켰다</td>
+							<td><input name="2" type="radio" value="" id="1"></td>
+							<td><input name="2" type="radio" value="" id="1"></td>
+							<td><input name="2" type="radio" value="" id="1"></td>
+							<td><input name="2" type="radio" value="" id="1"></td>
+							<td><input name="2" type="radio" value="" id="1"></td>
+						</tr>
+						<tr>
+							<td>3.교수님의 설명은 명확하고 이해하기 쉬웠다</td>
+							<td><input name="3" type="radio" value="" id="1"></td>
+							<td><input name="3" type="radio" value="" id="1"></td>
+							<td><input name="3" type="radio" value="" id="1"></td>
+							<td><input name="3" type="radio" value="" id="1"></td>
+							<td><input name="3" type="radio" value="" id="1"></td>
+						</tr>
+						<tr>
+							<td>4.교수님은 강의 준비를 철저히 하였으며 열의를 가지고 강의를 하였다</td>
+							<td><input name="4" type="radio" value="" id="1"></td>
+							<td><input name="4" type="radio" value="" id="1"></td>
+							<td><input name="4" type="radio" value="" id="1"></td>
+							<td><input name="4" type="radio" value="" id="1"></td>
+							<td><input name="4" type="radio" value="" id="1"></td>
+						</tr>
+						<tr>
+							<td>5.교수님은 이 분야에 관한 나의 학슴 동기를 높였다</td>
+							<td><input name="4" type="radio" value="" id="1"></td>
+							<td><input name="4" type="radio" value="" id="1"></td>
+							<td><input name="4" type="radio" value="" id="1"></td>
+							<td><input name="4" type="radio" value="" id="1"></td>
+							<td><input name="4" type="radio" value="" id="1"></td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+			<br/>
+			<h5 class="title categoryBar">교수님께 하고싶은 말</h5>
+			<textarea class="border-box" rows="5" cols="84" maxlength="100" placeholder="(100자 이내)"></textarea>
+		</div>
+	</div>
+</div>
+<script>
+$(function(){
+	$(".subject").on("click",function(){
+		var sbjTitle = $(this).eq(0).text();
+		console.log("sbjTitle : " + sbjTitle);
+		$(".right-container").css("display","block");
+	});
+})
+
+</script>
+

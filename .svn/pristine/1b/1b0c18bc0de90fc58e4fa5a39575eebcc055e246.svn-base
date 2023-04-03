@@ -1,0 +1,65 @@
+package kr.or.ddit.student.controller;
+
+
+import java.util.List;
+
+import javax.servlet.http.HttpSession;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+import kr.or.ddit.student.service.StuService;
+import kr.or.ddit.vo.StudentVO;
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
+@Controller
+@RequestMapping("/stuList")
+public class StuController {
+
+	@Autowired
+	StuService stuService;
+	
+	//요청URI : /stuList/list
+	@GetMapping("/list")
+	public String stuList(HttpSession session, Model model) {
+		
+//		UserVO userVO = (UserVO) session.getAttribute("userVO");
+//		int userNum = userVO.getUsername();
+//		log.info("세션 : " + userNum);
+		
+		List<StudentVO> list = this.stuService.stuList();
+		
+		for(StudentVO stuVO : list) {
+			if(stuVO.getStuStatus() == 0) {
+				stuVO.setStustat("재학");
+			}else if(stuVO.getStuStatus() == 1){
+				stuVO.setStustat("휴학");
+			}else if(stuVO.getStuStatus() == 2){
+				stuVO.setStustat("자퇴");
+			}else if(stuVO.getStuStatus() == 3){
+				stuVO.setStustat("졸업");
+			}else {
+				stuVO.setStustat("제적");
+			}
+		}
+		
+		model.addAttribute("data", list);
+		
+		log.info("list(학생) : " + list);
+		
+		return "student/stuList";
+	}
+	
+	//요청 : /stuList/listt
+	@GetMapping("/listt")
+	public List<StudentVO> listt(Model model) {
+		log.info("ajax로 왔다");
+		return this.stuService.stuList();
+		
+	}
+	
+}

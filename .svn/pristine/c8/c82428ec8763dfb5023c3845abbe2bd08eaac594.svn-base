@@ -1,0 +1,13 @@
+package kr.or.ddit.vo;
+
+import org.apache.ibatis.type.Alias;
+
+import lombok.Data;
+
+@Data
+@Alias("readCountVO")
+public class ReadCountVO {
+	private int plus;
+	private int lastChat;
+	private int stuCount;
+}

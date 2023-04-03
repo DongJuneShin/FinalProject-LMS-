@@ -1,0 +1,26 @@
+package kr.or.ddit.dp.service;
+
+import java.util.List;
+import java.util.Map;
+
+import kr.or.ddit.vo.DepartmentNoticeVO;
+
+public interface IDPNotieBoardService {
+
+	public int getDnNum();
+
+	public int createPost(DepartmentNoticeVO dnVO);
+
+	public int getTotal(Map<String, Object> map);
+
+	public List<DepartmentNoticeVO> getDPNoticeList(Map<String, Object> map);
+
+	public DepartmentNoticeVO detail(int dnNum);
+
+	public int delete(int dnNum);
+
+	public int deleteFile(int dfNum);
+
+	public int updatePost(DepartmentNoticeVO dnVO);
+
+}

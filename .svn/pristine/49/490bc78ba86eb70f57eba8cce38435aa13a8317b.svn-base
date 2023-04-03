@@ -1,0 +1,30 @@
+package kr.or.ddit.vo;
+
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+
+import lombok.Data;
+
+@Data
+public class ACADCalendarVO {
+	
+	public String id;
+	public String title;
+	public String start;
+	public String end;
+	public String allDay;
+	public String calendar;
+	
+	// empNum 저장
+	public int username1;
+	public int username2;
+
+	public void setExtendedProps(Object extendedProps) {
+		JsonParser jparser = new JsonParser();
+		JsonElement jsonElement = jparser.parse(extendedProps.toString());
+	    JsonObject jsonObject = jsonElement.getAsJsonObject();
+	    this.calendar = jsonObject.get("calendar").getAsString();
+	}	
+
+}
